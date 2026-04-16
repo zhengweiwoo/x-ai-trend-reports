@@ -3,42 +3,1643 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>X AI 资讯日报 — 历史归档</title>
+<title>X AI 资讯日报</title>
 <style>
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    max-width: 720px;
-    margin: 60px auto;
+    max-width: 860px;
+    margin: 40px auto;
     padding: 0 24px 80px;
     line-height: 1.7;
     color: #1a1a1a;
     background: #fafafa;
   }
-  h1 {
-    font-size: 1.8em;
-    border-bottom: 2px solid #1d9bf0;
-    padding-bottom: 8px;
+  h1 { font-size: 1.8em; border-bottom: 2px solid #1d9bf0; padding-bottom: 8px; }
+  h2 { font-size: 1.3em; margin-top: 2em; border-left: 4px solid #1d9bf0; padding-left: 10px; }
+  h3 { font-size: 1.05em; margin-top: 1.6em; color: #333; }
+  blockquote {
+    border-left: 3px solid #ccc;
+    margin: 8px 0;
+    padding: 4px 12px;
+    color: #555;
+    background: #f4f4f4;
+    border-radius: 4px;
   }
-  .subtitle { color: #666; font-size: 0.9em; margin-bottom: 30px; }
-  ul { list-style: none; padding: 0; }
-  li {
+  a { color: #1d9bf0; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 2em 0; }
+  code { background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 0.9em; }
+  img { max-width: 100%; border-radius: 8px; margin: 6px 0; }
+  strong { color: #111; }
+  p { margin: 6px 0; }
+  /* ── Left sidebar TOC ── */
+  #toc {
+    position: fixed;
+    left: max(10px, calc(50% - 650px));
+    top: 40px;
+    width: 175px;
+    background: #fff;
+    border-right: 1px solid #e1e8ed;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  #toc a {
+    display: block;
+    padding: 4px 8px;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  #toc .toc-h2 { color: #222; font-size: 0.85em; font-weight: 600; margin-top: 6px; }
+  #toc .toc-h3 { color: #666; font-size: 0.8em; padding-left: 18px; }
+  #toc a:hover { color: #1d9bf0; text-decoration: none; }
+  #toc a.active {
+    color: #1d9bf0;
+    background: #e8f5fe;
+    border-left-color: #1d9bf0;
+    font-weight: 600;
+  }
+  /* ── Multi-image grid ── */
+  .media-grid {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .media-grid img {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 50%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  /* ── Top-20 post cards ── */
+  .post-card {
     background: #fff;
     border: 1px solid #e1e8ed;
-    border-radius: 10px;
-    margin: 10px 0;
-    padding: 14px 18px;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px 0;
   }
-  li a { color: #1d9bf0; text-decoration: none; font-weight: 600; }
-  li a:hover { text-decoration: underline; }
-  footer { margin-top: 50px; color: #999; font-size: 0.85em; text-align: center; }
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #1d9bf0;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 1.1em;
+    flex-shrink: 0;
+  }
+  .post-name { font-weight: 700; color: #0f1419; }
+  .post-handle { color: #536471; font-size: 0.9em; }
+  .post-rank {
+    margin-left: auto;
+    color: #1d9bf0; font-weight: 700; font-size: 0.95em;
+  }
+  .post-card .post-metrics {
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px solid #eff3f4;
+    color: #536471; font-size: 0.88em;
+    display: flex; gap: 20px; flex-wrap: wrap;
+  }
+  .post-card .post-link {
+    margin-top: 8px; font-size: 0.85em;
+  }
+  /* ── Collapsible post body ── */
+  .post-body.collapsible {
+    max-height: 360px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.3s ease;
+  }
+  .post-body.collapsible::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0; height: 60px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
+    pointer-events: none;
+  }
+  .post-body.expanded {
+    max-height: none;
+  }
+  .post-body.expanded::after { display: none; }
+  .expand-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: #1d9bf0;
+    font-size: 0.88em;
+    cursor: pointer;
+    padding: 6px 0;
+    margin-top: 4px;
+  }
+  .expand-btn:hover { text-decoration: underline; }
+  .post-card img {
+    max-width: 100%; border-radius: 12px; margin: 8px 0;
+  }
+  .post-card blockquote {
+    border-left: 3px solid #1d9bf0;
+    background: #f7f9f9;
+    border-radius: 8px;
+    margin: 10px 0; padding: 8px 14px;
+  }
+  /* ── Releases & Recs sections ── */
+  .category-section {
+    background: #fff;
+    border: 1px solid #e8ecef;
+    border-radius: 12px;
+    padding: 4px 16px;
+    margin: 10px 0;
+  }
+  .category-section ul {
+    list-style: none;
+    padding: 0; margin: 0;
+  }
+  .category-section li {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .category-section li:last-child {
+    border-bottom: none;
+  }
+  .category-section > p {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .category-section > p:last-child {
+    border-bottom: none;
+  }
+  .category-section img {
+    max-width: 100%; border-radius: 8px; margin: 8px 0;
+  }
 </style>
 </head>
 <body>
-<h1>X AI 资讯日报</h1>
-<p class="subtitle">抓取 X（推特）AI 领域公开帖子，经 LLM 分析汇总为每日精华。共 1 期。</p>
+<nav id="toc">
+  <a class="toc-h2" href="#sec-top">一、当日最值得关注的帖子（Top 20）</a>
+  <a class="toc-h2" href="#sec-releases">二、新发布：代码库 / 模型 / 论文</a>
+  <a class="toc-h3" href="#sec-releases-1">🤖 模型</a>
+  <a class="toc-h3" href="#sec-releases-2">💻 代码库</a>
+  <a class="toc-h3" href="#sec-releases-3">📄 论文</a>
+  <a class="toc-h2" href="#sec-recs">三、社区推荐：书籍 / 视频 / 教程</a>
+  <a class="toc-h3" href="#sec-recs-1">📚 书籍</a>
+  <a class="toc-h3" href="#sec-recs-2">🎬 视频</a>
+  <a class="toc-h3" href="#sec-recs-3">📝 教程</a>
+  <a class="toc-h3" href="#sec-recs-4">🎓 课程</a>
+  <a class="toc-h3" href="#sec-recs-5">🎙️ 播客</a>
+  <a class="toc-h3" href="#sec-recs-6">🔗 其他</a>
+  <a class="toc-h3" href="#sec-recs-7">🔗 工具使用指南</a>
+</nav>
+<h1>X AI 资讯日报 — 2026-04-16</h1>
+<blockquote>
+<p>数据来源：x_posts_2026-04-16T16-07-00.json  |  帖子总数：637 条  |  生成时间：2026-04-16T08:12 UTC</p>
+</blockquote>
+<hr />
+<h2 id="sec-top">一、当日最值得关注的帖子（Top 20）</h2><div class="post-card"><div class="post-header"><div class="avatar">N</div><div><span class="post-name">NVIDIA AI Developer</span><br><span class="post-handle">@NVIDIAAIDev</span></div><span class="post-rank">#1</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 2,142  🔁 424  💬 82  👁 246.4K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Today, we released Lyra 2.0, a framework for generating persistent, explorable 3D worlds at scale, from NVIDIA Research.</p>
+<p>Generating large-scale, complex environments is difficult for AI models. Current models often “forget” what spaces look like and lose track of movement over time, causing objects to shift, blur, or appear inconsistent. This prevents them from creating the reliable 3D environments required for downstream simulations. Lyra 2.0 solves these issues by:</p>
+<p>Maintaining per-frame 3D geometry to retrieve past frames and establish spatial correspondences<br />
+ Using self-augmented training to correct its own temporal drifting.</p>
+<p>Lyra 2.0 turns an image into a 3D world you can walk through, look back, and drop a robot into for real-time rendering, simulation, and immersive applications.</p>
+<p>Learn more: <br />
+https://<br />
+research.nvidia.com/labs/sil/proje<br />
+cts/lyra2/<br />
+… <br />
+ Read the paper: <br />
+https://<br />
+arxiv.org/abs/2604.13036<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044445645109436672_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/NVIDIAAIDev/status/2044445645109436672">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">O</div><div><span class="post-name">OpenAI Developers</span><br><span class="post-handle">@OpenAIDevs</span></div><span class="post-rank">#2</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 1,913  🔁 243  💬 76  👁 282.1K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Build long-running agents with more control over agent execution.</p>
+<p>New capabilities in the Agents SDK:<br />
+• Run agents in controlled sandboxes<br />
+• Inspect and customize the open-source harness<br />
+• Control when memories are created and where they’re stored<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044466699785920937_img0.jpg" /><br />
+<strong>被评论:</strong> Vercel Developers、Steven Heidel、Modal、Daytona等 5 人 均引用了此帖<br />
+</p></div><div class="post-link"><a href="https://x.com/OpenAIDevs/status/2044466699785920937">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">C</div><div><span class="post-name">Chubby</span><br><span class="post-handle">@kimmonismus</span></div><span class="post-rank">#3</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 1,600  🔁 137  💬 29  👁 187.0K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> GPT-5.4 Pro just solved Erdős Problem #1196, a 60-year-old conjecture from Erdős, Sárközy, and Szemerédi on primitive sets. </p>
+<p>One shot. ~80 minutes of reasoning.</p>
+<p>What makes this different from other AI math results (from what I understand): The world's top expert on this problem, Jared Lichtman (who proved the original Erdős Primitive Set Conjecture during his PhD), worked on #1196 for 7 years alongside Fields Medal-level collaborators; this was not attention-starved.</p>
+<p>The AI rejected the standard approach every mathematician had used since Erdős' 1935 paper, a switch from analysis to probability, and instead stayed purely analytic using von Mangoldt weights. Human aesthetic convention had made that path invisible.</p>
+<p>Lichtman's analogy: like AI discovering a new chess opening that grandmasters overlooked because of convention.<br />
+Terry Tao suspects the trick could simplify the broader theory of prime factorization anatomy, not just solve one conjecture.<br />
+Lichtman calls it possibly the first AI "Book proof" for an Erdős problem.</p>
+<p>GPT-5.4 pro is the math goat.</p>
+<blockquote>
+<p>💬 引用 <strong>Jared Duker Lichtman</strong> ()<br />
+In my doctorate, I proved the Erdős Primitive Set Conjecture, showing that the primes themselves are maximal among all primitive sets.</p>
+<p>This problem will always be in my heart: I worked on it for 4 years (even when my mentors recommended against it!) and loved every minute of it. x.com/boazbaraktcs/s…</p>
+</blockquote>
+<p></p></div><div class="post-link"><a href="https://x.com/kimmonismus/status/2044323747461529980">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">Q</div><div><span class="post-name">Qwen</span><br><span class="post-handle">@Alibaba_Qwen</span></div><span class="post-rank">#4</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 1,536  🔁 110  💬 47  👁 89.6K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> It’s finally here!  Huge thanks to the <br />
+@opencode<br />
+  team for the seamless integration. Qwen3.6-Plus and Qwen3.5-Plus are now live in Go!</p>
+<p>Update now to try it out!</p>
+<blockquote>
+<p>💬 引用 <strong>OpenCode</strong> ()<br />
+Qwen3.6 Plus and 3.5 Plus now available in Go</p>
 <ul>
-    <li><a href="x_posts_2026-04-16T16-07-00.html">2026-04-16 日报</a></li>
+<li>both strong - 3.5 is 3x cheaper</li>
+<li>both support images</li>
+<li>zero data retention</li>
 </ul>
-<footer>Auto-generated by <code>x_daily.py</code> · Powered by GitHub Pages</footer>
+<p>update to the latest to try</p>
+</blockquote>
+<p></p></div><div class="post-link"><a href="https://x.com/Alibaba_Qwen/status/2044427258526581148">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">W</div><div><span class="post-name">Windsurf</span><br><span class="post-handle">@windsurf</span></div><span class="post-rank">#5</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 947  🔁 188  💬 54  👁 215.2K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Introducing Windsurf 2.0.</p>
+<p>Manage all your agents from one place and delegate work to the cloud with Devin - so your agents keep shipping even after you close your laptop.<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044513219730186732_vid0.jpg" /><br />
+<strong>被评论:</strong> swyx、Cognition 均引用了此帖<br />
+</p></div><div class="post-link"><a href="https://x.com/windsurf/status/2044513219730186732">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">U</div><div><span class="post-name">Unsloth AI</span><br><span class="post-handle">@UnslothAI</span></div><span class="post-rank">#6</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 1,056  🔁 194  💬 16  👁 41.7K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> You can now train Gemma 4 with RL in our free notebook!</p>
+<p>You just need 9GB VRAM to RL Gemma 4 locally!</p>
+<p>Gemma 4 will learn to solve sodoku autonomously via GRPO.</p>
+<p>RL Guide: <br />
+https://<br />
+unsloth.ai/docs/get-start<br />
+ed/reinforcement-learning-rl-guide<br />
+…<br />
+GitHub: <br />
+https://<br />
+github.com/unslothai/unsl<br />
+oth<br />
+…</p>
+<p>Gemma 4 Colab: <br />
+https://<br />
+colab.research.google.com/github/unsloth<br />
+ai/notebooks/blob/main/nb/Gemma4_(E2B)_Reinforcement_Learning_Sudoku_Game.ipynb<br />
+…<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044428909635359166_img0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/UnslothAI/status/2044428909635359166">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">X</div><div><span class="post-name">Xenova</span><br><span class="post-handle">@xenovacom</span></div><span class="post-rank">#7</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 838  🔁 111  💬 25  👁 76.2K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> The era of 1-bit LLMs is here — now with WebGPU acceleration! </p>
+<p>It's incredible to think that a quantized 1.7B model (just 290MB in size) can run at ~100 tokens per second entirely in your browser.</p>
+<p>Try the demo yourself<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044451835780518024_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/xenovacom/status/2044451835780518024">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">T</div><div><span class="post-name">Theo - t3.gg</span><br><span class="post-handle">@theo</span></div><span class="post-rank">#8</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 1,002  🔁 11  💬 14  👁 73.6K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Julius came over to show me this today and I flipped a fucking shit and told him to drop everything and finish it<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044334362557292840_qvid0.jpg" /></p>
+<blockquote>
+<p>💬 引用 <strong>Julius</strong> ()<br />
+In the next version of T3 Code: Adding new projects becomes a breeze. Not relying on the native file browser make it work on web and remote environments!<br />
+<img alt="引用视频" src="https://pbs.twimg.com/amplify_video_thumb/2044299310188388352/img/izloqK9yIzO2VGRv.jpg" /></p>
+</blockquote>
+<p></p></div><div class="post-link"><a href="https://x.com/theo/status/2044334362557292840">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">D</div><div><span class="post-name">Demis Hassabis</span><br><span class="post-handle">@demishassabis</span></div><span class="post-rank">#9</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 809  🔁 79  💬 43  👁 63.3K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Our most expressive and steerable TTS model yet! Designed to give builders granular control over AI-generated speech, Gemini 3.1 Flash TTS is really fun to play with! Available in preview today - for devs via the Gemini API &amp; <br />
+@GoogleAIStudio<br />
+ + for enterprises on Vertex AI<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044599020690010217_qvid0.jpg" /></p>
+<blockquote>
+<p>💬 引用 <strong>Logan Kilpatrick</strong> ()<br />
+Introducing Gemini 3.1 Flash TTS , our latest text to speech model with scene direction, speaker level specificity, audio tags, more natural + expressive voices, and support for 70 different languages.</p>
+<p>Available via our new audio playground in AI Studio and in the Gemini API!<br />
+<img alt="引用视频" src="https://pbs.twimg.com/amplify_video_thumb/2044447498601984000/img/Gz_mOOk3YyS1_sJp.jpg" /></p>
+</blockquote>
+<p></p></div><div class="post-link"><a href="https://x.com/demishassabis/status/2044599020690010217">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">N</div><div><span class="post-name">Nucleus AI</span><br><span class="post-handle">@withnucleusai</span></div><span class="post-rank">#10</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 539  🔁 80  💬 26  👁 35.6K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Introducing Nucleus-Image: the first sparse Mixture-of-Experts diffusion model</p>
+<p>17B parameters. Only 2B active. 10x more parameter-efficient than leading diffusion models.</p>
+<p>Toe-to-toe with GPT Image 1, Imagen 4, and Qwen-Image: from pure pre-training alone. No DPO. No RL. No preference tuning.</p>
+<p>Day 0 support in  Hugging Face diffusers. Fully open-source under Apache 2.0. </p>
+<p>Weights, training code, and dataset recipe - we're not holding anything back &lt;3</p>
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/2044412335473713284_img0.jpg"><img src="x_posts_2026-04-16T16-07-00_media/2044412335473713284_img1.jpg"><img src="x_posts_2026-04-16T16-07-00_media/2044412335473713284_img2.jpg"></div>
+<p></p></div><div class="post-link"><a href="https://x.com/withnucleusai/status/2044412335473713284">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">S</div><div><span class="post-name">Srinivas Narayanan</span><br><span class="post-handle">@snsf</span></div><span class="post-rank">#11</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 539  🔁 49  💬 12  👁 39.0K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Today we launched a major update to the OpenAI Agents SDK to help developers build and deploy long-running, durable agents in production.</p>
+<p>You can now build your own Codex-style agents using powerful primitives for modern agents - file and computer use, skills, memory and compaction.</p>
+<p>The harness and compute are now split - you can bring your own sandbox or use partners like Blaxel, Cloudflare, Daytona, E2B, Modal, Runloop, and Vercel for container execution.</p>
+<p>The harness is open-source and so you can inspect and customize it for your needs.</p>
+<p>Try it out!</p>
+<p>https://<br />
+openai.com/index/the-next<br />
+-evolution-of-the-agents-sdk/<br />
+…</p>
+<p>Really fantastic work by <br />
+@stevendcoffey<br />
+ and the API team!<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044514160034324793_card.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/snsf/status/2044514160034324793">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">A</div><div><span class="post-name">AK</span><br><span class="post-handle">@_akhaliq</span></div><span class="post-rank">#12</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 453  🔁 79  💬 6  👁 40.3K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Nvidia released Lyra 2.0 on Hugging Face</p>
+<p>Explorable Generative 3D Worlds</p>
+<p>paper: <br />
+https://<br />
+huggingface.co/papers/2604.13<br />
+036<br />
+…</p>
+<p>model: <br />
+https://<br />
+huggingface.co/nvidia/Lyra-2.0<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044444898657460475_vid0.jpg" /><br />
+<strong>被评论:</strong> Xuanchi Ren 均引用了此帖<br />
+</p></div><div class="post-link"><a href="https://x.com/_akhaliq/status/2044444898657460475">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">C</div><div><span class="post-name">Chubby</span><br><span class="post-handle">@kimmonismus</span></div><span class="post-rank">#13</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 484  🔁 35  💬 23  👁 43.0K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Gemini 3.1 Flash TTS released. </p>
+<p>Highlight: highly controllable speech via simple text prompts, more natural voices, and support for 70+ languages. Nice one<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044451526865809616_img0.jpg" /></p>
+<blockquote>
+<p>💬 引用 <strong>Google DeepMind</strong> ()<br />
+Gemini 3.1 Flash TTS is our most controllable text-to-speech model yet.</p>
+<p>With new Audio Tags, you can easily direct vocal style, delivery, and pace through text commands.<br />
+<img alt="引用图片" src="https://pbs.twimg.com/amplify_video_thumb/2044428059479085056/img/Af_ZQo8IfA_zXdxv?format=jpg&amp;name=240x240" /></p>
+</blockquote>
+<p></p></div><div class="post-link"><a href="https://x.com/kimmonismus/status/2044451526865809616">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">T</div><div><span class="post-name">Thanh Pham</span><br><span class="post-handle">@runsonai</span></div><span class="post-rank">#14</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 433  🔁 54  💬 23  👁 23.9K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> I open-sourced DDTree-MLX: tree-based speculative decoding for Apple Silicon.</p>
+<p>Now you can run Qwen 3.5 27b on your Apple machines 1.5x faster than normal. Expect even faster on smaller models.</p>
+<p>It runs Qwen 3.5 27B locally with MLX, extends DFlash with draft trees, and gets ~10-15% faster than DFlash alone on code + structured prompts while keeping output lossless.</p>
+<p>Built on the works of <br />
+@bstnxbt</p>
+<p>@liranringel</p>
+<p>@yaniv_romano</p>
+<p>https://<br />
+github.com/humanrouter/dd<br />
+tree-mlx<br />
+…<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044430597251023156_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/runsonai/status/2044430597251023156">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">V</div><div><span class="post-name">Visual Studio Code</span><br><span class="post-handle">@code</span></div><span class="post-rank">#15</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 421  🔁 37  💬 14  👁 32.8K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> New <br />
+@code<br />
+ release today  </p>
+<p>We're enhancing the agent experience with debug logs for past sessions, terminal interaction tools, built-in GitHub Copilot, and more!<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044555141039190157_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/code/status/2044555141039190157">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">K</div><div><span class="post-name">Kling AI</span><br><span class="post-handle">@Kling_ai</span></div><span class="post-rank">#16</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 332  🔁 81  💬 33  👁 29.5K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Kling AI Skill Now Live!<br />
+No complex configs, no model adaptation! <br />
+One-stop encapsulation of Kling API core powers:<br />
+ Text/Image-to-Video + Intelligent Storyboard<br />
+ 4K Image Gen + Style Transfer + Image Series<br />
+ Custom Element Library &amp; cross-scene consistency<br />
+ Natural language integration + full Agent compatibility (Claude Code/Cursor/OpenClaw/Codex/Copilot/Opencode &amp; more)</p>
+<p>Slash dev costs, supercharge creative delivery. <br />
+ Limited-time OpenClaw Friendly Trial Packages available today!<br />
+ Check &amp; get started: <br />
+https://<br />
+kling.ai/document-api/a<br />
+piReference/skill<br />
+…<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044413037239496801_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/Kling_ai/status/2044413037239496801">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">W</div><div><span class="post-name">webAI</span><br><span class="post-handle">@thewebAI</span></div><span class="post-rank">#17</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 255  🔁 118  💬 5  👁 48.5K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> We're open-sourcing webAI-ColVec1.</p>
+<h1>1 on ViDoRe V3. Two of the top three spots.</h1>
+<p>For a long time, multimodal RAG looked like a scaling problem. It's not.</p>
+<p>Frontier-level retrieval. No OCR. No preprocessing. Built for real documents.<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044435998508240926_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/thewebAI/status/2044435998508240926">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">O</div><div><span class="post-name">Omar Sanseviero</span><br><span class="post-handle">@osanseviero</span></div><span class="post-rank">#18</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 356  🔁 38  💬 6  👁 19.9K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Introducing TIPS v2</p>
+<p>Foundational text-image encoder<br />
+Can be used as the base for different multimodal applications<br />
+Apache 2.0<br />
+New pre-training recipes</p>
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/2044520603647164735_img0.jpg"><img src="x_posts_2026-04-16T16-07-00_media/2044520603647164735_img1.jpg"></div>
+<p></p></div><div class="post-link"><a href="https://x.com/osanseviero/status/2044520603647164735">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">X</div><div><span class="post-name">Xuanchi Ren</span><br><span class="post-handle">@xuanchi13</span></div><span class="post-rank">#19</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 292  🔁 74  💬 9  👁 27.5K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> We scaled up Lyra to generate explorable 3D worlds! </p>
+<p>Introducing Lyra 2.0 — turning a single image into a 3D world you can walk through, look back, and even drop a robot into </p>
+<p>Code and Model available today!</p>
+<p>Website: <br />
+https://<br />
+research.nvidia.com/labs/sil/proje<br />
+cts/lyra2/<br />
+…</p>
+<p>(1/N)<br />
+<img alt="视频" src="x_posts_2026-04-16T16-07-00_media/2044480294401806573_vid0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/xuanchi13/status/2044480294401806573">🔗 View on X</a></div></div>
+<div class="post-card"><div class="post-header"><div class="avatar">E</div><div><span class="post-name">elvis</span><br><span class="post-handle">@omarsar0</span></div><span class="post-rank">#20</span></div><div class="post-body">
+<p><div class="post-metrics">❤️ 276  🔁 56  💬 10  👁 23.6K  ｜ 信息价值 9/10</div>
+<strong>内容:</strong> Long-horizon AI research agents are mostly a state-management problem.</p>
+<p>It is not enough for an agent to reason well in the next turn. ML research requires task setup, implementation, experiments, debugging, and evidence tracking over hours or days.</p>
+<p>This new paper introduces AiScientist, a system for autonomous long-horizon engineering for ML research.</p>
+<p>The key idea is to keep control thin and state thick. A top-level orchestrator manages stage-level progress, while specialized agents repeatedly ground themselves in durable workspace artifacts: analyses, plans, code, logs, and experimental evidence.</p>
+<p>That "File-as-Bus" design matters. AiScientist improves PaperBench by 10.54 points over the best matched baseline and reaches 81.82 Any Medal% on MLE-Bench Lite. Removing File-as-Bus drops PaperBench by 6.41 points and MLE-Bench Lite by 31.82 points.</p>
+<p>Why does it matter?</p>
+<p>Autonomous research agents need durable project memory, not just longer chats.</p>
+<p>Paper: <br />
+https://<br />
+arxiv.org/abs/2604.13018</p>
+<p>Learn to build effective AI agents in our academy: <br />
+https://<br />
+academy.dair.ai<br />
+<img alt="图片" src="x_posts_2026-04-16T16-07-00_media/2044436099121209546_img0.jpg" /><br />
+</p></div><div class="post-link"><a href="https://x.com/omarsar0/status/2044436099121209546">🔗 View on X</a></div></div><hr />
+<h2 id="sec-releases">二、新发布：代码库 / 模型 / 论文</h2>
+<h3 id="sec-releases-1">🤖 模型</h3><div class="category-section">
+<ul>
+<li><strong>Opus 4.7</strong><br />
+  Opus 4.7 在Google Vertex上被发现，发布在即。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img1.jpg"><br />
+  来源：<a href="https://x.com/kimmonismus/status/2044680088403288213">帖子</a></li>
+<li><strong>Parcae</strong><br />
+  一种新架构，能以更少的参数实现 Transformer 的质量，通过层循环技术实现 FLOPs 的有效扩展。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img2.jpg"><br />
+  来源：<a href="https://x.com/realDanFu/status/2044459930149941304">帖子</a> · <a href="https://x.com/vipulved/status/2044669650408267874">帖子</a></li>
+<li><strong>Lyra 2.0</strong><br />
+  将单张图片转化为可探索的 3D 世界，支持用户行走、观察和添加元素。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img3.jpg"><br />
+  来源：<a href="https://x.com/xuanchi13/status/2044480294401806573">帖子</a></li>
+<li><strong>Gemma 4</strong> — <a href="https://unsloth.ai/docs/...">https://unsloth.ai/docs/...</a><br />
+  支持使用 RL（强化学习）进行训练，仅需 9GB VRAM 即可本地进行 RL Gemma 4 训练。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img4.jpg"><br />
+  来源：<a href="https://x.com/UnslothAI/status/2044428909635359166">帖子</a></li>
+<li><strong>Muse Spark</strong><br />
+  一个在 TaxEval 上排名第一、Finance Agent 上排名第二的模型，适用于多种实际应用。<br />
+  来源：<a href="https://x.com/jack_w_rae/status/2044550578089693653">帖子</a></li>
+<li><strong>TIPS v2</strong><br />
+  TIPS v2 是一个基础文本-图像编码器，可用作多模态应用的基座，支持 Apache 2.0。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img5.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img6.jpg"></div></li>
+</ul>
+<p>来源：<a href="https://x.com/osanseviero/status/2044520603647164735">帖子</a><br />
+- <strong>1-bit LLMs</strong><br />
+  一种新的 1.7B 参数量 LLM，体积小，支持 WebGPU 加速，可在浏览器中运行。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img7.jpg"><br />
+  来源：<a href="https://x.com/xenovacom/status/2044451835780518024">帖子</a><br />
+- <strong>Tau2-Infinity</strong><br />
+  Tau2-Infinity 的首个版本发布，包含 Tau2-Bench 和用于构建任务的合成任务挖掘算法。<br />
+  来源：<a href="https://x.com/Shahules786/status/2044452820863398396">帖子</a><br />
+- <strong>Nemotron 3 Super</strong> — <a href="https://huggingface.co/papers/2604.12374">https://huggingface.co/papers/2604.12374</a><br />
+  Nemotron 3 Super：开源、高效的混合 Mamba-Transformer 模型，用于智能体推理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img8.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044450499898769930">帖子</a><br />
+- <strong>Nucleus-Image</strong><br />
+  首个稀疏混合专家（MoE）扩散模型，17B参数，仅2B活跃，参数效率是领先扩散模型的10倍。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img9.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img10.jpg"></div></p>
+<p>来源：<a href="https://x.com/withnucleusai/status/2044412335473713284">帖子</a><br />
+- <strong>Qwen3.6-Plus and Qwen3.5-Plus</strong><br />
+  Qwen3.6-Plus 和 Qwen3.5-Plus 已在 Go 中上线，均支持图像，且 3.5 更经济。<br />
+  来源：<a href="https://x.com/Alibaba_Qwen/status/2044427258526581148">帖子</a><br />
+- <strong>Holo3</strong><br />
+  在计算机使用任务上达到最先进性能的模型。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img11.jpg"><br />
+  来源：<a href="https://x.com/tonywu_71/status/2044348647454712169">帖子</a><br />
+- <strong>Gemma 4 E4B</strong> — <a href="https://huggingface.co/">https://huggingface.co/</a><br />
+  一个已完全解放的Gemma 4 E4B模型，保留了连贯性并提高了编码能力。<br />
+  来源：<a href="https://x.com/Teknium/status/2044482769536045194">帖子</a><br />
+- <strong>SuperGemma4-31b-abliterated</strong><br />
+  本地运行的最强大的LLM之一，具备无审查、轻量级和智能的特点。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img12.jpg"><br />
+  来源：<a href="https://x.com/Yampeleg/status/2044388436476297705">帖子</a><br />
+- <strong>GPT-5.4-Cyber</strong><br />
+  OpenAI 推出的一款新模型，用于对抗 Mythos playbook。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img13.jpg"><br />
+  来源：<a href="https://x.com/TheRundownAI/status/2044362640546201900">帖子</a><br />
+- <strong>TIPSv2</strong><br />
+  TIPSv2 开源模型。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img14.jpg"><br />
+  来源：<a href="https://x.com/gabriberton/status/2044651590825787540">帖子</a><br />
+- <strong>Gemma-4-21B-REAP</strong><br />
+  Gemma-4-21B-REAP 模型发布，在推理任务上表现出色，并提升了准确性。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img15.jpg"><br />
+  来源：<a href="https://x.com/0xSero/status/2044552144783601738">帖子</a><br />
+- <strong>Gemma 4 26B A4B</strong><br />
+  Google 的 Gemma 4 26B A4B 模型在 MacBook Pro M5 Max 上原生 Swift 运行，速度超过 100tk/s。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img16.jpg"><br />
+  来源：<a href="https://x.com/adrgrondin/status/2044499798263222534">帖子</a><br />
+- <strong>Trinity</strong> — <a href="https://twitter.com/yacinelearning/status/2044494644214473050">https://twitter.com/yacinelearning/status/2044494644214473050</a><br />
+  Arcee计算资助计划提供了一个开放权重模型，供研究/项目使用。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img17.jpg"><br />
+  来源：<a href="https://x.com/yacinelearning/status/2044494644214473050">帖子</a><br />
+- <strong>MAI‑Image‑2‑Efficient</strong> — <a href="https://msft.it/6013Q74Av">https://msft.it/6013Q74Av</a><br />
+  一个更高效的图像生成模型，效率是MAI-Image-2的4倍。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img18.jpg"><br />
+  来源：<a href="https://x.com/NandoDF/status/2044344988478152840">帖子</a><br />
+- <strong>MAI-Image-2-Efficient</strong><br />
+  MAI-Image-2-Efficient 是一款高效的生产力工具，专注于生成量大、速度快、成本可控的图像，适用于迭代式工作流。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img19.jpg"><br />
+  来源：<a href="https://x.com/mustafasuleyman/status/2044467951429116290">帖子</a><br />
+- <strong>MAI-Image-2</strong><br />
+  MAI-Image-2 是一款精确的图像生成工具，适用于需要精细控制的创意过程。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img20.jpg"><br />
+  来源：<a href="https://x.com/mustafasuleyman/status/2044467951429116290">帖子</a><br />
+- <strong>Gemini Personal Intelligence</strong><br />
+  Gemini将“个人智能”功能带给更多用户，允许安全地连接应用。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img21.jpg"><br />
+  来源：<a href="https://x.com/Google/status/2044437335425564691">帖子</a><br />
+- <strong>Gemini Everyday</strong><br />
+  Gemini Everyday 模型当前因需求量大而不可用，提示用户稍后重试。<br />
+  来源：<a href="https://x.com/HamelHusain/status/2044526407154602397">帖子</a></p>
+</div><h3 id="sec-releases-2">💻 代码库</h3><div class="category-section">
+<ul>
+<li><strong>Codex plugin for Claude Code</strong><br />
+  OpenAI发布的插件，允许在Anthropic的Claude Code环境中直接调用Codex。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img22.jpg"><br />
+  来源：<a href="https://x.com/TheTuringPost/status/2044561927905677558">帖子</a></li>
+<li><strong>hermes-lcm v0.3.0</strong> — <a href="https://t.co/VTkIHPWPX4">https://t.co/VTkIHPWPX4</a><br />
+  Hermes-lcm的最新版本，引入了智能搜索、自适应压缩等功能。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img23.jpg"><br />
+  来源：<a href="https://x.com/SteveSchoettler/status/2044536537434755493">帖子</a></li>
+<li><strong>Hermes Agent QQBot and AWS Bedrock support</strong><br />
+  Hermes Agent新增对QQBot和AWS Bedrock模型提供商的官方支持。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img24.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044557360962871711">帖子</a></li>
+<li><strong>VS Code</strong> — <a href="https://aka.ms/VSCode/116">https://aka.ms/VSCode/116</a><br />
+  VS Code 发布新版本，增强代理体验，支持调试日志、终端交互工具和 GitHub Copilot。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img25.jpg"><br />
+  来源：<a href="https://x.com/code/status/2044555141039190157">帖子</a> · <a href="https://x.com/code/status/2044555141911601496">帖子</a></li>
+<li><strong>open hermes agent focused dataset</strong> — <a href="https://huggingface.co/datasets/OusiaResearch/open-hermes-evol-instruct">https://huggingface.co/datasets/OusiaResearch/open-hermes-evol-instruct</a><br />
+  一个新发布的、专注于Hermes代理的数据集。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img26.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044518923677405648">帖子</a></li>
+<li><strong>HY-World 2.0</strong> — <a href="https://huggingface.co/tencent/HY-World-2.0">https://huggingface.co/tencent/HY-World-2.0</a><br />
+  一个用于世界生成和重建的多模态世界模型框架。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img27.jpg"><br />
+  来源：<a href="https://x.com/robonaissance/status/2044518876549960033">帖子</a></li>
+<li><strong>OpenAI Agents SDK</strong> — <a href="https://t.co/MXPwV83mAl">https://t.co/MXPwV83mAl</a><br />
+  一个用于构建和部署持久化代理的SDK，支持Codex风格的代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img28.jpg"><br />
+  来源：<a href="https://x.com/andersonbcdefg/status/2044517520229732822">帖子</a> · <a href="https://x.com/snsf/status/2044514160034324793">帖子</a></li>
+<li><strong>Blender MCP</strong> — <a href="https://twitter.com/cline/status/2044491260023746728">https://twitter.com/cline/status/2044491260023746728</a><br />
+  Cline现已支持Blender，可通过自然语言控制对象、材质、着色器、动画等。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img29.jpg"><br />
+  来源：<a href="https://x.com/cline/status/2044491260023746728">帖子</a></li>
+<li><strong>LangSmith Fleet</strong> — <a href="https://t.co/WJfLvPAX3U">https://t.co/WJfLvPAX3U</a><br />
+  LangSmith推出的新功能，提供工具访问控制和使用跟踪，支持按用户、代理和工具追踪成本。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img30.jpg"><br />
+  来源：<a href="https://x.com/LangChain/status/2044461182439068044">帖子</a> · <a href="https://x.com/LangChain/status/2044461183688999343">帖子</a></li>
+<li><strong>Habitat-GS</strong> — <a href="https://huggingface.co/papers/2604.12626">https://huggingface.co/papers/2604.12626</a><br />
+  Habitat-GS是一个高保真度导航模拟器，集成了动态高斯溅射。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img31.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044446412033675457">帖子</a></li>
+<li><strong>webAI-ColVec1</strong><br />
+  一个开源的多模态RAG检索代码库，实现了前沿级别的检索，无需OCR或预处理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img32.jpg"><br />
+  来源：<a href="https://x.com/thewebAI/status/2044435998508240926">帖子</a></li>
+<li><strong>Kling AI Skill</strong><br />
+  Kling AI Skill现已上线，封装了Kling API的核心能力，包括文本/图像到视频以及智能故事板。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img33.jpg"><br />
+  来源：<a href="https://x.com/Kling_ai/status/2044413037239496801">帖子</a></li>
+<li><strong>Asimov v1</strong><br />
+  一个开源的人形机器人，可供用户自行搭建。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img34.jpg"><br />
+  来源：<a href="https://x.com/robonaissance/status/2044375661372981523">帖子</a></li>
+<li><strong>HoloTab</strong><br />
+  一个可以在浏览器中使用的计算机使用工具，基于Holo3。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img35.jpg"><br />
+  来源：<a href="https://x.com/tonywu_71/status/2044348647454712169">帖子</a></li>
+<li><strong>T3 Code</strong><br />
+  一个用于简化添加新项目的工具，支持Web和远程环境。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img36.jpg"><br />
+  来源：<a href="https://x.com/theo/status/2044334362557292840">帖子</a></li>
+<li><strong>Tesla AI5</strong><br />
+  帖子提到了Tesla AI5芯片，并称其“just… beautiful”。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img37.jpg"><br />
+  来源：<a href="https://x.com/cb_doge/status/2044525735218713083">帖子</a></li>
+<li><strong>Gemini app for Mac</strong> — <a href="https://gemini.google.com/mac/?utm_source=x&amp;utm_medium=paid-social&amp;utm_campaign=gemini_for_mac">https://gemini.google.com/mac/?utm_source=x&amp;utm_medium=paid-social&amp;utm_campaign=gemini_for_mac</a><br />
+  Gemini 应用程序现已推出 Mac 版本，可通过快捷键访问并分享屏幕内容。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img38.jpg"><br />
+  来源：<a href="https://x.com/GeminiApp/status/2044445911716090212">帖子</a></li>
+<li><strong>Meta-Harness</strong> — <a href="https://github.com/stanford-iris-lab/meta-harness">https://github.com/stanford-iris-lab/meta-harness</a><br />
+  Meta-Harness 代码库发布，用于自主改进 LLM 在人类正在进行的任务上的表现。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img39.jpg"><br />
+  来源：<a href="https://x.com/yoonholeee/status/2044442372864700510">帖子</a></li>
+<li><strong>KillBench</strong><br />
+  一个用于揭示大型语言模型隐藏偏见的基准测试，已开源，结果令人惊讶。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img40.jpg"><br />
+  来源：<a href="https://x.com/TheTuringPost/status/2044572602807534015">帖子</a></li>
+<li><strong>Gemma4 + Falcon Perception</strong><br />
+  一个使用 Gemma4 和 Falcon Perception 进行视频追踪的组合，能描述视频内容并分割对象。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img41.jpg"><br />
+  来源：<a href="https://x.com/googlegemma/status/2044535184494891250">帖子</a></li>
+<li><strong>Dreamer 4</strong> — <a href="https://t.co/mi2jbdcxkF">https://t.co/mi2jbdcxkF</a><br />
+  探索了从Dyna到Dreamer 4的强化学习的“梦想家之路”。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img42.jpg"><br />
+  来源：<a href="https://x.com/robonaissance/status/2044492664314155288">帖子</a></li>
+<li><strong>Trinity Builders Program</strong><br />
+  为开发者、研究人员和开源构建者提供Trinity模型的免费推理访问。<br />
+  来源：<a href="https://x.com/latkins/status/2044473550564982969">帖子</a></li>
+<li><strong>Agents SDK</strong><br />
+  Agents SDK的更新，支持自定义计算/存储，并集成到agent循环中。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img43.jpg"><br />
+  来源：<a href="https://x.com/stevenheidel/status/2044485558391509338">帖子</a></li>
+<li><strong>Gemini on Mac</strong><br />
+  Gemini首次发布桌面版，为Mac构建的原生Swift应用程序。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img44.jpg"><br />
+  来源：<a href="https://x.com/sundarpichai/status/2044452464724967550">帖子</a></li>
+<li><strong>Tripo3D H3.1 &amp; P1 Smart Mesh</strong><br />
+  Tripo3D H3.1提供高保真3D模型，P1 Smart Mesh可快速生成低多边形网格。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img45.jpg"><br />
+  来源：<a href="https://x.com/fal/status/2044482715227931065">帖子</a></li>
+<li><strong>Simple Self-Distillation</strong><br />
+  Apple发布的一种微调方法，通过自采样和交叉熵训练来提升模型在编程任务上的表现。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img46.jpg"><br />
+  来源：<a href="https://x.com/SergioPaniego/status/2044424654287167544">帖子</a></li>
+<li><strong>Gradio Super Mario theme</strong><br />
+  Gradio发布了一个新的Super Mario主题，可以通过设置theme='hmb/super-mario'来使用。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img47.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044438996743307555">帖子</a></li>
+<li><strong>Personal Intelligence in Gemini</strong><br />
+  Gemini 的个性化智能功能现已在全球更多用户可用，包括免费用户。<br />
+  来源：<a href="https://x.com/GeminiApp/status/2044430579996020815">帖子</a> · <a href="https://x.com/GeminiApp/status/2044430582093107686">帖子</a></li>
+<li><strong>Self-improving AI agent with a built-in learning loop</strong> — <a href="https://t.co/GYXkZo5l1b">https://t.co/GYXkZo5l1b</a><br />
+  Nous Research 构建了一个具有内置学习循环的自改进 AI 代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img48.jpg"><br />
+  来源：<a href="https://x.com/dl_weekly/status/2044423109973815447">帖子</a></li>
+<li><strong>mlx-vlm</strong><br />
+  一个用于构建基于 Gemma4 和 Falcon Perception 的本地推理代理的代码库。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img49.jpg"><br />
+  来源：<a href="https://x.com/yacinelearning/status/2044418093552746683">帖子</a></li>
+<li><strong>deepagents deploy</strong><br />
+  deepagents deploy现在支持用户作用域内存，允许每个用户拥有自己的持久化内存。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img50.jpg"><br />
+  来源：<a href="https://x.com/sydneyrunkle/status/2044410224115622195">帖子</a> · <a href="https://x.com/hwchase17/status/2044411753455312997">帖子</a></li>
+<li><strong>open-source AI for quantum computing</strong><br />
+  Nvidia 发布用于量子计算的开源 AI。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img51.jpg"><br />
+  来源：<a href="https://x.com/TheRundownAI/status/2044362640546201900">帖子</a></li>
+<li><strong>Gemini 3.1 Flash TTS</strong> — <a href="https://ai.google.dev/gemini-api/docs/speech-generation#prompting-guide">https://ai.google.dev/gemini-api/docs/speech-generation#prompting-guide</a><br />
+  Gemini 3.1 Flash TTS 的提示指南，支持使用自然语言标签控制语音生成。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img52.jpg"><br />
+  来源：<a href="https://x.com/_philschmid/status/2044669629012815965">帖子</a> · <a href="https://x.com/_philschmid/status/2044669632485658727">帖子</a> · <a href="https://x.com/gabriberton/status/2044651590825787540">帖子</a></li>
+<li><strong>Windsurf 2.0</strong> — <a href="https://x.com/Windsurf/status/1784590028964698233">https://x.com/Windsurf/status/1784590028964698233</a><br />
+  Windsurf 2.0 发布，提供集中管理代理的平台，并支持将工作委托给 Devin。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img53.jpg"><br />
+  来源：<a href="https://x.com/swyx/status/2044542494420214217">帖子</a></li>
+<li><strong>Datamule</strong><br />
+  一个推动开放模型和数据集发布的项目，旨在对抗美国 AI 生态系统日益闭源的趋势。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img54.jpg"><br />
+  来源：<a href="https://x.com/TeraflopAI/status/2044430993549832615">帖子</a></li>
+<li><strong>ruby starter pack for google ai contest 2010</strong><br />
+  作者因 AI 发展决定将此项目闭源，结束开源商业模式。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img55.jpg"><br />
+  来源：<a href="https://x.com/vikhyatk/status/2044506087463018739">帖子</a></li>
+<li><strong>OpenAI Agent SDK + Modal</strong> — <a href="https://twitter.com/akshat_b/status/2044489564211880169">https://twitter.com/akshat_b/status/2044489564211880169</a><br />
+  使用OpenAI Agent SDK和Modal构建的ML研究代理，可生成GPU沙箱并运行子代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img56.jpg"><br />
+  来源：<a href="https://x.com/akshat_b/status/2044489564211880169">帖子</a></li>
+<li><strong>ParseBench</strong> — <a href="https://twitter.com/LlamaIndex/status/1787014708198717459">https://twitter.com/LlamaIndex/status/1787014708198717459</a><br />
+  ParseBench是首个专为AI代理设计的文档OCR基准测试，用于评估表格解析能力。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img57.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img58.jpg"></div></li>
+</ul>
+<p>来源：<a href="https://x.com/jerryjliu0/status/2044446899567292570">帖子</a><br />
+- <strong>Glasswing project</strong><br />
+  Anthropic的Glasswing项目，利用Mythos模型发现多项项目（包括FFmpeg）的零日漏洞。<br />
+  来源：<a href="https://x.com/QuixiAI/status/2044429680347087085">帖子</a><br />
+- <strong>ACE-Step 1.5</strong><br />
+  一个开源AI音乐模型，可以根据文本描述生成歌曲，现已发布演示。<br />
+  来源：<a href="https://x.com/ckaplanis1/status/2044334126912708864">帖子</a><br />
+- <strong>Tesla App Update</strong> — <a href="https://twitter.com/SawyerMerritt/status/2044563818013995275">https://twitter.com/SawyerMerritt/status/2044563818013995275</a><br />
+  Tesla发布了新的App更新，下载的视频片段现在包含速度、转向角度和自动驾驶状态等详细信息。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img59.jpg"><br />
+  来源：<a href="https://x.com/SawyerMerritt/status/2044563818013995275">帖子</a><br />
+- <strong>Hermes ecosystem</strong><br />
+  Hermes 生态系统将上线多配置文件切换功能，模型和通道配置可在 Web 端完成。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img60.jpg"><br />
+  来源：<a href="https://x.com/lumao_2026/status/2044626235251466561">帖子</a><br />
+- <strong>tsgo</strong> — <a href="https://t.co/lOX5xCfSOy">https://t.co/lOX5xCfSOy</a><br />
+  一个内部团队采用的工具，显著减少了CI构建的等待时间。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img61.jpg"><br />
+  来源：<a href="https://x.com/drosenwasser/status/2044564756028395620">帖子</a><br />
+- <strong>SEC EDGAR filings dataset</strong> — <a href="https://huggingface.co/datasets/TeraflopAI/SEC-EDGAR-Filings">https://huggingface.co/datasets/TeraflopAI/SEC-EDGAR-Filings</a><br />
+  TeraflopAI与他人合作，在Hugging Face上免费开源了SEC EDGAR的所有主要备案文件。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img62.jpg"><br />
+  来源：<a href="https://x.com/EnricoShippole/status/2044432865862054361">帖子</a><br />
+- <strong>artifact-preview for Hermes</strong> — <a href="https://t.co/7S9N1Nn9mX">https://t.co/7S9N1Nn9mX</a><br />
+  一个用于Hermes代理的artifact预览功能，提供实时交互式预览。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img63.jpg"><br />
+  来源：<a href="https://x.com/ChuckSRQ/status/2044504539978465658">帖子</a><br />
+- <strong>Cursor canvases</strong><br />
+  Cursor 发布新功能，支持通过画布交互式地可视化和生成信息。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img64.jpg"><br />
+  来源：<a href="https://x.com/DevangJhabakh/status/2044489339774927190">帖子</a> · <a href="https://x.com/sjwhitmore/status/2044502596321481205">帖子</a><br />
+- <strong>Glass Health new language options</strong> — <a href="https://t.co/xbCxXToA9A">https://t.co/xbCxXToA9A</a><br />
+  Glass Health 引入新的语言选项，支持超过 50 种语言进行录音转录。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img65.jpg"><br />
+  来源：<a href="https://x.com/GlassHealthHQ/status/2044501663101096199">帖子</a> · <a href="https://x.com/GlassHealthHQ/status/2044501671011643746">帖子</a><br />
+- <strong>deepagents</strong> — <a href="https://twitter.com/hwchase17/status/2044489534210015640">https://twitter.com/hwchase17/status/2044489534210015640</a><br />
+  deepagents现已支持结构化输出，以更清晰地定义子代理与主代理之间的通信。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img66.jpg"><br />
+  来源：<a href="https://x.com/hwchase17/status/2044489534210015640">帖子</a><br />
+- <strong>NeMoClaw</strong> — <a href="O">O</a><br />
+  集成 MiniMax M2.7 的 NVIDIA NeMoClaw 设置指南，提供安全、开箱即用的集成。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img67.png"><br />
+  来源：<a href="https://x.com/MiniMax_AI/status/2044594907009134943">帖子</a><br />
+- <strong>Evolver</strong><br />
+  一个开源的自我进化项目。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img68.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044344547334062510">帖子</a><br />
+- <strong>NewBird AI</strong><br />
+  Allbirds 公司已出售品牌资产，重组为 NewBird AI，专注于 AI 计算基础设施。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img69.jpg"><br />
+  来源：<a href="https://x.com/TheRundownAI/status/2044418263556276354">帖子</a> · <a href="https://x.com/TheRundownAI/status/2044428408378040690">帖子</a><br />
+- <strong>Weaviate Shared Cloud</strong><br />
+  Weaviate共享云现已全面支持AWS，可在AWS US East和Europe区域运行。</p>
+</div><h3 id="sec-releases-3">📄 论文</h3><div class="category-section">
+<ul>
+<li><strong>Planning to Explore: Curiosity-Driven Planning for LLM Test Generation</strong><br />
+  将LLM测试生成形式化为贝叶斯探索，提出了一种基于规划的方法来提高LLM测试的效率和质量。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img70.jpg"><br />
+  来源：<a href="https://x.com/AlfonAmayuelas/status/2044473916157317378">帖子</a></li>
+<li><strong>Rethinking On-Policy Distillation of Large Language Models</strong> — <a href="https://huggingface.co/papers/2604.13016">https://huggingface.co/papers/2604.13016</a><br />
+  一篇关于大规模语言模型在线策略蒸馏的论文，探讨其现象学、机制和方法。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img71.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044444138582466652">帖子</a></li>
+<li><strong>KnowRL</strong> — <a href="https://huggingface.co/papers/2604.12627">https://huggingface.co/papers/2604.12627</a><br />
+  一篇关于通过强化学习和最小充分知识指导来增强LLM推理能力的论文。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img72.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044443270114115608">帖子</a></li>
+<li><strong>ClawGUI</strong> — <a href="https://huggingface.co/papers/2604.11784">https://huggingface.co/papers/2604.11784</a><br />
+  一个用于训练、评估和部署GUI代理的统一框架。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img73.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044442387498328471">帖子</a></li>
+<li><strong>Continuous Adversarial Flow Models</strong> — <a href="https://huggingface.co/papers/2604.11521">https://huggingface.co/papers/2604.11521</a><br />
+  一篇关于连续对抗流模型的论文。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img74.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044441193472258438">帖子</a></li>
+<li><strong>Subliminal Learning</strong> — <a href="https://...">https://...</a><br />
+  研究 LLM 如何通过数据中的隐藏信号传递偏好或不匹配等特质。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img75.jpg"><br />
+  来源：<a href="https://x.com/AnthropicAI/status/2044493337835802948">帖子</a></li>
+<li><strong>DeltaWorld</strong><br />
+  一种创新的世界模型方法，将视频帧压缩为单个token，显著降低了计算和存储需求。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img76.jpg"><br />
+  来源：<a href="https://x.com/gabriberton/status/2044645940364247271">帖子</a></li>
+<li><strong>World Action Model (WAM)</strong><br />
+  关于基于视频基础模型的“世界行动模型”（WAM）的深度探讨和总结。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img77.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img78.jpg"></div></li>
+</ul>
+<p>来源：<a href="https://x.com/ZhihuFrontier/status/2044614548335022524">帖子</a><br />
+- <strong>VOID: Video Object and Interaction Deletion</strong> — <a href="https://arxiv.org/abs/2604.12978">https://arxiv.org/abs/2604.12978</a><br />
+  一篇关于视频对象和交互删除的论文，旨在提高视频内容修复效果。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img79.jpg"><br />
+  来源：<a href="https://x.com/dl_weekly/status/2044464565862252713">帖子</a><br />
+- <strong>GlotOCR Bench</strong> — <a href="https://huggingface.co/papers/2604.12978">https://huggingface.co/papers/2604.12978</a><br />
+  一项关于OCR模型在处理多种Unicode脚本时仍面临挑战的研究。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img80.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044463712241623046">帖子</a><br />
+- <strong>AI Double Agents for belief steering via theory of mind</strong> — <a href="https://huggingface.co/papers/2604.11666">https://huggingface.co/papers/2604.11666</a><br />
+  一项关于“AI 双智能体用于通过心智理论进行信念引导”的研究，论文链接分享在 Hugging Face。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img81.jpg"><br />
+  来源：<a href="https://x.com/vaidehi_patil_/status/2044450580848836994">帖子</a><br />
+- <strong>In the past ten millennia [in Europe], we find that many hundreds of alleles have been affected by strong directional selection</strong> — <a href="https://t.co/GRv4rBOnF4">https://t.co/GRv4rBOnF4</a><br />
+  一篇关于欧洲过去一万年人类基因选择的研究论文，发现了许多影响人类智力的基因。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img82.jpg"><br />
+  来源：<a href="https://x.com/iointelresearch/status/2044499380514759094">帖子</a><br />
+- <strong>video diffusion models</strong><br />
+  介绍一种新的视频扩散模型，它使用时间压缩的运动嵌入来直接捕捉场景动态。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img83.jpg"><br />
+  来源：<a href="https://x.com/cloneofsimo/status/2044324185410023451">帖子</a><br />
+- <strong>gene switch controlled wirelessly using electromagnetic fields</strong><br />
+  一篇关于研究人员在韩国构建了可通过电磁场无线控制的基因开关的论文。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img84.jpg"><br />
+  来源：<a href="https://x.com/scaling01/status/2044614610125279402">帖子</a><br />
+- <strong>Ouro</strong><br />
+  Ouro：通过迭代学习循环构建自改进AI。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img85.jpg"><br />
+  来源：<a href="https://x.com/LearnOpenCV/status/2044410840649232690">帖子</a></p>
+</div><hr />
+<h2 id="sec-recs">三、社区推荐：书籍 / 视频 / 教程</h2>
+<h3 id="sec-recs-1">📚 书籍</h3><div class="category-section">
+<ul>
+<li><strong>Subliminal learning—how LLMs can pass on traits like preferences or misalignment through hidden signals in data</strong> — <a href="https://www.nature.com/articles/s41586-024-07431-4">https://www.nature.com/articles/s41586-024-07431-4</a><br />
+  推荐一篇关于 LLM 如何通过隐藏信号传递偏好或不对齐等特质的研究论文。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img1.jpg"><br />
+  来源：<a href="https://x.com/AnthropicAI/status/2044493337835802948">帖子</a></li>
+<li><strong>New from David's Reich's lab</strong> — <a href="https://t.co/GRv4rBOnF4">https://t.co/GRv4rBOnF4</a><br />
+  分享了关于 David Reich 实验室新研究的帖子，提到了基因选择对人类智力影响的发现。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img2.jpg"><br />
+  来源：<a href="https://x.com/iointelresearch/status/2044499380514759094">帖子</a></li>
+<li><strong>This book literally changed the trajectory of my career. David MacKay still a hero of mine.</strong><br />
+  一本改变了作者职业生涯轨迹的书，推荐了大卫·麦凯。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img3.jpg"><br />
+  来源：<a href="https://x.com/RazRazcle/status/2044485861451174327">帖子</a></li>
+</ul>
+</div><h3 id="sec-recs-2">🎬 视频</h3><div class="category-section">
+<ul>
+<li><strong>Prime numbers are supposed to be random. This video proves they aren't.</strong><br />
+  该视频展示了数学家 Ulam 发现的质数“随机性”中意想不到的规律，证明了质数并非完全随机。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img4.jpg"><br />
+  来源：<a href="https://x.com/mathemetica/status/2044527182907576394">帖子</a></li>
+<li><strong>Quantum Mechanics Series Grand Finale A wave-packet is fired toward a double slit. Then our whole series comes alive at once. Probability is conserved as the packet moves. Phase gradients steer the …</strong><br />
+  该帖子是关于量子力学系列讲座的最终章，通过双缝实验的波包演示，展示了概率守恒和相位梯度。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img5.jpg"><br />
+  来源：<a href="https://x.com/mathelirium/status/2044350392947953784">帖子</a></li>
+<li><strong>The Full Story of Notion AI</strong> — <a href="https://latent.space/p/notion">https://latent.space/p/notion</a><br />
+  推荐关于 Notion AI 的详尽故事，特别是其中关于检索和搜索的细节。<br />
+  来源：<a href="https://x.com/AstasiaMyers/status/2044558114633224666">帖子</a></li>
+<li><strong>Rpi pico theremin inspired by Matthias Wandel's latest video</strong><br />
+  分享了一个受 Matthias Wandel 最新视频启发的 Rpi pico theremin 项目，仅需两根线即可完成。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img6.jpg"><br />
+  来源：<a href="https://x.com/johnowhitaker/status/2044633992411205707">帖子</a></li>
+<li><strong>My live streams average about 1,000 viewers on yt, but my total viewership for a given stream is closer to 23,000.</strong> — <a href="https://x.com/theo/status/1561828215072915456">https://x.com/theo/status/1561828215072915456</a><br />
+  作者解释了直播视频的观看数据，强调视频内容（clips）才是驱动流量和影响力的主要产品。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img7.jpg"><br />
+  来源：<a href="https://x.com/theo/status/2044628384366686591">帖子</a></li>
+<li><strong>4 hours total from completely blank slate to finished video.</strong><br />
+  分享了一个从零开始到完成一个视频仅需 4 小时的惊人效率，展现了当前内容创作的极高效率。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img8.jpg"><br />
+  来源：<a href="https://x.com/c_valenzuelab/status/2044628470739894408">帖子</a></li>
+<li><strong>As Deep as the Grave</strong><br />
+  电影“As Deep as the Grave”的首个预告片已发布，其中包含已故演员 Val Kilmer 的 AI 版本。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img9.jpg"><br />
+  来源：<a href="https://x.com/TheRundownAI/status/2044521332004589885">帖子</a></li>
+<li><strong>Interpretability in AI</strong><br />
+  作者表示非常喜欢纽约时报关于AI可解释性的报道，并认为该领域取得了令人兴奋的进展。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img10.jpg"><br />
+  来源：<a href="https://x.com/DanJBalsam/status/2044552382076620887">帖子</a></li>
+<li><strong>NYT article on AI</strong><br />
+  作者提及了纽约时报早间关于AI的报道。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img11.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img12.jpg"></div></li>
+</ul>
+<p>来源：<a href="https://x.com/ericho_goodfire/status/2044537608026657015">帖子</a><br />
+- <strong>This video went extremely viral, and might be the first time we are seeing the “Reverse Slop Syndrome.”</strong> — <a href="x.com/runwa">x.com/runwa</a><br />
+  分享了一个病毒式传播的视频，并讨论了其中是否为真实视频而非 AI 生成的现象。<br />
+  来源：<a href="https://x.com/SHL0MS/status/2044530773131239577">帖子</a><br />
+- <strong>Theo - t3.gg</strong> — <a href="https://t.co/u7zJp94T6B">https://t.co/u7zJp94T6B</a><br />
+  正在尝试 Claude Code Desktop。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img13.jpg"><br />
+  来源：<a href="https://x.com/theo/status/2044524627628573123">帖子</a><br />
+- <strong>This 2 hour Stanford lecture will teach you more about how LLMs like ChatGPT &amp; Claude are built than most people working at top AI companies learn in their entire careers. Bookmark this &amp; give 2 hour …</strong><br />
+  强烈推荐一个2小时的斯坦福讲座，内容关于LLM的构建，比多数AI公司员工学到的还多。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img14.jpg"><br />
+  来源：<a href="https://x.com/RohOnChain/status/2044462381997363334">帖子</a><br />
+- <strong>Image to Web walkthrough</strong><br />
+  作者分享了关于 Image to Web 的完整 walkthrough 视频。<br />
+  来源：<a href="https://x.com/arena/status/2044480485074907402">帖子</a><br />
+- <strong>Seedance 2.0</strong><br />
+  作者表示终于可以尝试 Seedance 2.0。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img15.jpg"><br />
+  来源：<a href="https://x.com/scaling01/status/2044474861406351759">帖子</a><br />
+- <strong>GEN-1 plays with fidget toy.</strong> — <a href="https://www.youtube.com/playlist?list=PLIv5TE4TO-ZgiMiHpD5ZSiJVLa9I6557R">https://www.youtube.com/playlist?list=PLIv5TE4TO-ZgiMiHpD5ZSiJVLa9I6557R</a><br />
+  分享了一个关于GEN-1能够玩弄触控玩具的视频，并提供了其他任务的演示链接，展示了其强大的物理世界理解能力。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img16.jpg"><br />
+  来源：<a href="https://x.com/E0M/status/2044440435888992260">帖子</a><br />
+- <strong>Reverse Slop Syndrome</strong><br />
+  推荐了一个关于“反向坡综合征”的病毒式传播视频，并讨论其是否为AI生成。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img17.jpg"><br />
+  来源：<a href="https://x.com/c_valenzuelab/status/2044397368292811179">帖子</a><br />
+- <strong>okay another demo fo Gemma4 + Falcon Perception for automated video segmentation &amp; tracking, no human prompts needed the idea: you feed Gemma4 a few sampled frames and ask it to describe what it see</strong><br />
+  分享了一个关于 Gemma4 + Falcon Perception 的演示，展示了自动化视频分割和跟踪，无需人工提示。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img18.jpg"><br />
+  来源：<a href="https://x.com/yb2698/status/2044372948770000919">帖子</a><br />
+- <strong>neuron degeneration</strong> — <a href="https://t.co/zJ7T26g0fO">https://t.co/zJ7T26g0fO</a><br />
+  分享脑机接口如何绕过ALS引起的神经通路损伤，帮助恢复功能。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img19.jpg"><br />
+  来源：<a href="https://x.com/elonmusk/status/2044330367029739654">帖子</a><br />
+- <strong>Video diffusion models learn motion indirectly through pixels.</strong><br />
+  推荐一个关于视频扩散模型如何学习运动的视频，介绍了新的运动嵌入方法。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img20.jpg"><br />
+  来源：<a href="https://x.com/cloneofsimo/status/2044324185410023451">帖子</a></p>
+</div><h3 id="sec-recs-3">📝 教程</h3><div class="category-section">
+<ul>
+<li><strong>Spark 2.0 was built to make massive-scale 3D open and accessible on the web. It’s exciting to see builders already using the LoD system to stream high-fidelity worlds, like the 100M+ splat environmen</strong> — <a href="https://x.com/i/status/2044527917787713919">https://x.com/i/status/2044527917787713919</a><br />
+  分享了 Spark 2.0 的发布，这是一个用于构建大规模3D开放和可访问网络的工具，并展示了其高保真世界流媒体能力。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img21.jpg"><br />
+  来源：<a href="https://x.com/zhzHNN/status/2044527917787713919">帖子</a></li>
+<li><strong>Warmup to Statistical Mechanics What Exactly is a Hamiltonian A System? In ordinary Mechanics, you might begin with position and velocity. Hamiltonian Mechanics rewrites the same motion in a differe …</strong><br />
+  这似乎是关于统计力学系列讲座的预热内容，重点解释了哈密顿系统的概念，并与普通力学进行对比。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img22.jpg"><br />
+  来源：<a href="https://x.com/mathelirium/status/2044558122987995278">帖子</a></li>
+<li><strong>How to Best Prompt Gemini 3.1 Flash TTS in Plain English Tags</strong> — <a href="https://ai.google.dev/gemini-api/docs/speech-generation#prompting-guide">https://ai.google.dev/gemini-api/docs/speech-generation#prompting-guide</a><br />
+  分享如何使用纯英文标签来最佳提示 Gemini 3.1 Flash TTS，允许模型解释方括号内的任何内容。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img23.jpg"><br />
+  来源：<a href="https://x.com/_philschmid/status/2044669629012815965">帖子</a> · <a href="https://x.com/_philschmid/status/2044669632485658727">帖子</a></li>
+<li><strong>RL Guide</strong> — <a href="https://unsloth.ai/docs/g">https://unsloth.ai/docs/g</a><br />
+  介绍如何使用免费笔记本在本地通过 9GB VRAM 训练 Gemma 4，使其能够自主解决数独。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img24.jpg"><br />
+  来源：<a href="https://x.com/UnslothAI/status/2044428909635359166">帖子</a></li>
+<li><strong>CVPR 2026 papers</strong> — <a href="https://docs.google.com/spreadsheets/d/1Jd32Q9684Qk5_x0B17G16n3Hk5sM-R6k0Pz04H4Vj0A/edit?usp=sharing">https://docs.google.com/spreadsheets/d/1Jd32Q9684Qk5_x0B17G16n3Hk5sM-R6k0Pz04H4Vj0A/edit?usp=sharing</a><br />
+  正在整理一份 CVPR 2026 论文列表，包含代码、演示和海报链接，方便追踪重要内容。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img25.jpg"><br />
+  来源：<a href="https://x.com/skalskip92/status/2044380023025463577">帖子</a></li>
+<li><strong>DeltaWorld</strong><br />
+  推荐用于世界模型的 DeltaWorld，它能将视频帧压缩成少量（1个）“delta”令牌。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img26.jpg"><br />
+  来源：<a href="https://x.com/gabriberton/status/2044645940364247271">帖子</a></li>
+<li><strong>Life pro tip: You can now disable Shorts in the YouTube app</strong><br />
+  分享一个关闭 YouTube Shorts 的技巧，通过设置实现，作者认为这是一个很棒的技巧。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img27.jpg"><br />
+  来源：<a href="https://x.com/BorisMPower/status/2044644418507157945">帖子</a></li>
+<li><strong>My 2027 AI stack</strong><br />
+  作者分享了他对于 2027 年 AI 技术栈的个人规划和思考，旨在帮助更多人了解 AI 基础设施。<br />
+  来源：<a href="https://x.com/timzaman/status/2044523917554192584">帖子</a></li>
+<li><strong>To be clear, you DO NOT GROW YOUR REACH VIA LIVE CONTENT. I exclusively go live to film videos. "Clip farming" is the best use of live video.</strong> — <a href="https://x.com/theo/status/1561828215072915456">https://x.com/theo/status/1561828215072915456</a><br />
+  作者分享了其利用直播进行内容创作的策略，强调直播的主要目的是为了拍摄视频，而不是直接获取观众。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img28.jpg"><br />
+  来源：<a href="https://x.com/theo/status/2044629219884556668">帖子</a></li>
+<li><strong>Manage your Claude Code session like your life depends on it.</strong><br />
+  提供了关于管理 Claude Code 会话的实用建议，强调经常清除和开始新任务时启动新会话的重要性。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img29.jpg"><br />
+  来源：<a href="https://x.com/Yuchenj_UW/status/2044619615037493278">帖子</a></li>
+<li><strong>Thoughts &amp; Summary on World Action Model (WAM)</strong><br />
+  对基于视频基础模型的最新政策范式 World Action Model (WAM) 进行了深入分析和总结。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img30.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img31.jpg"></div></li>
+</ul>
+<p>来源：<a href="https://x.com/ZhihuFrontier/status/2044614548335022524">帖子</a><br />
+- <strong>prompt guide</strong> — <a href="https://t.co/ay2lqPgQ0y">https://t.co/ay2lqPgQ0y</a><br />
+  分享一个关于如何使用提示（prompt）的指南。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img32.jpg"><br />
+  来源：<a href="https://x.com/demishassabis/status/2044609360299426263">帖子</a><br />
+- <strong>NVIDIA NeMoClaw with MiniMax M2.7</strong> — <a href="https://developer.nvidia.com/blog/setting-up-nvidia-nemoclaw-with-minimax-m2-7/">https://developer.nvidia.com/blog/setting-up-nvidia-nemoclaw-with-minimax-m2-7/</a><br />
+  介绍如何使用MiniMax M2.7配置NVIDIA NeMoClaw，并提供了完整的教程链接。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img33.png"><br />
+  来源：<a href="https://x.com/MiniMax_AI/status/2044594907009134943">帖子</a><br />
+- <strong>Meta-Harness</strong> — <a href="https://github.com/stanford-iris-lab/meta-harness">https://github.com/stanford-iris-lab/meta-harness</a><br />
+  Meta-Harness 的代码已发布，可帮助用户实现良好的 Meta-Harness。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img34.jpg"><br />
+  来源：<a href="https://x.com/yoonholeee/status/2044442372864700510">帖子</a><br />
+- <strong>KillBench</strong><br />
+  一个揭示 LLM 偏见的有趣且富有创意的基准测试，是开源的，结果令人惊讶。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img35.jpg"><br />
+  来源：<a href="https://x.com/TheTuringPost/status/2044572602807534015">帖子</a><br />
+- <strong>megatron benchmark</strong><br />
+  分享了 megatron-bridge 仓库的 megatron benchmark，并指出缺乏同等设置下的代码库基准比较。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img36.jpg"><br />
+  来源：<a href="https://x.com/eliebakouch/status/2044562488440623609">帖子</a><br />
+- <strong>LLM-as-a-Verifier writeup</strong> — <a href="https://t.co/OhXz8XJ5GO">https://t.co/OhXz8XJ5GO</a><br />
+  作者强烈推荐这篇关于LLM作为验证器的文章，并强调了增加评分粒度能提升验证器效果。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img37.jpg"><br />
+  来源：<a href="https://x.com/cwolferesearch/status/2044555271792406577">帖子</a> · <a href="https://x.com/cwolferesearch/status/2044555337974399168">帖子</a><br />
+- <strong>Gemma4 + Falcon Perception for video tracking</strong><br />
+  分享了使用 Gemma4 和 Falcon Perception 进行视频跟踪的示例，展示了如何处理视频帧并描述内容。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img38.jpg"><br />
+  来源：<a href="https://x.com/googlegemma/status/2044535184494891250">帖子</a><br />
+- <strong>building better agents</strong><br />
+  通知用户参加关于使用 LangChain 构建更好代理的纽约线下活动，将介绍代理改进循环和使用 trace。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img39.jpg"><br />
+  来源：<a href="https://x.com/LangChain/status/2044429013301485916">帖子</a><br />
+- <strong>An awesome new update</strong><br />
+  分享了作者与 Emergent 合作的一个关于减少工作压力的小工具，特别提到了自动化运营任务。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img40.jpg"><br />
+  来源：<a href="https://x.com/kimmonismus/status/2044442919416008766">帖子</a><br />
+- <strong>deepdive into the economics of DeepSeek Sparse Attention (DSA)</strong><br />
+  推荐了一篇关于 DeepSeek Sparse Attention (DSA) 经济学和它如何影响 Claude-Code 类产品服务利润率的深度文章。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img41.jpg"><br />
+  来源：<a href="https://x.com/finbarrtimbers/status/2044532456599261401">帖子</a><br />
+- <strong>The Hermes Agent article you need!</strong><br />
+  推荐了关于 Hermes Agent 的文章，强调了学习如何妥善管理 session 对新老用户的重要性。<br />
+  来源：<a href="https://x.com/NeoAIForecast/status/2044521045013762389">帖子</a><br />
+- <strong>Excellent deep dive to learn about DSA</strong><br />
+  另一条对 DeepSeek Sparse Attention (DSA) 经济学深度文章的推荐。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img42.jpg"><br />
+  来源：<a href="https://x.com/maximelabonne/status/2044528581687017755">帖子</a><br />
+- <strong>AI agents</strong><br />
+  预告 LangChain 将参加 Google Cloud Next，并在 Booth #5006 提供关于 AI 代理的演示和讨论。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img43.jpg"><br />
+  来源：<a href="https://x.com/LangChain/status/2044528730618339420">帖子</a><br />
+- <strong>Diversify your intelligence stack</strong><br />
+  在 Claude 服务中断的背景下，强调了工作流程和基础设施应支持多供应商/模型，并定期测试提示。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img44.jpg"><br />
+  来源：<a href="https://x.com/nptacek/status/2044532077849145768">帖子</a><br />
+- <strong>Great article!</strong><br />
+  对一篇关于 DeepSeek Sparse Attention (DSA) 经济学的深度文章表示赞赏。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img45.jpg"><br />
+  来源：<a href="https://x.com/finbarrtimbers/status/2044532456599261401">帖子</a><br />
+- <strong>Getting Into AI Infra</strong> — <a href="https://timzaman.com/">https://timzaman.com/</a><br />
+  分享了关于进入AI基础设施领域的教程或指南。<br />
+  来源：<a href="https://x.com/timzaman/status/2044523918862782750">帖子</a><br />
+- <strong>HY-World 2.0</strong> — <a href="https://3d-models.hunyuan.tencent.com/world/">https://3d-models.hunyuan.tencent.com/world/</a><br />
+  多模态世界模型框架，用于世界生成和重建，接受多种输入模态。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img46.jpg"><br />
+  来源：<a href="https://x.com/robonaissance/status/2044518876549960033">帖子</a><br />
+- <strong>AI 领域论文</strong> — <a href="https://arxiv.org/abs/2604.12012">https://arxiv.org/abs/2604.12012</a><br />
+  分享了一个关于 AI 领域论文和相关项目的链接。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img47.jpg"><br />
+  来源：<a href="https://x.com/osanseviero/status/2044520605907882473">帖子</a><br />
+- <strong>The closest analogy I would give would be that the main openings in chess were well-studied, but AI discovers a new opening line that had been overlooked based on human a …</strong><br />
+  引用了关于AI发现新开局的讨论，暗示了AI在策略和发现方面的潜力。<br />
+  来源：<a href="https://x.com/SebastienBubeck/status/2044513930194882992">帖子</a><br />
+- <strong>Devin is now available in Windsurf. Local agents make you faster. Cloud agents do the work while you're not there. Windsurf 2.0 brings them together.</strong><br />
+  推荐Windsurf 2.0，集成本地和云端AI代理，提高开发效率。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img48.jpg"><br />
+  来源：<a href="https://x.com/cognition/status/2044513797130621011">帖子</a><br />
+- <strong>Read why Devin is different:</strong> — <a href="https://t.co/PwIBJuay3A">https://t.co/PwIBJuay3A</a><br />
+  一篇关于Devin与其他AI的不同之处的文章，推荐阅读。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img49.jpg"><br />
+  来源：<a href="https://x.com/cognition/status/2044513798531518746">帖子</a><br />
+- <strong>We’ve been thinking a lot about scaling laws, wondering if there is a more effective way to scale FLOPs without increasing parameters. Turns out the answer is YES – by looping blocks of layers during …</strong><br />
+  分享了一种在不增加参数的情况下扩展FLOPs的新方法，建议通过循环层块来实现。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img50.jpg"><br />
+  来源：<a href="https://x.com/hayden_prairie/status/2044453231913537927">帖子</a><br />
+- <strong>It really took me a while to "get it" when it comes to nbdev. But I gotta hand it to @jeremyphoward this way of working makes too much sense once you're used to it.</strong><br />
+  作者推荐nbdev，并表示其工作方式一旦习惯后非常有意义。<br />
+  来源：<a href="https://x.com/fishnets88/status/2044423059503993307">帖子</a><br />
+- <strong>very nice blog with some experimental results at scale about QB load balancing.</strong><br />
+  分享关于 QB 负载均衡的实验结果，并赞扬其是 Deepseek 偏见方法的优化版本。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img51.jpg"><br />
+  来源：<a href="https://x.com/eliebakouch/status/2044497296172191788">帖子</a><br />
+- <strong>To show off what you can do with @OpenAI Agent SDK + @modal, we built an ML research agent (inspired by @karpathy).</strong> — <a href="https://modal.com/blog/openai-agents-sdk-official-sandbox-provider">https://modal.com/blog/openai-agents-sdk-official-sandbox-provider</a><br />
+  展示如何使用 OpenAI Agent SDK 和 Modal 构建一个 ML 研究代理，该代理可以启动 GPU 沙盒并运行子代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img52.jpg"><br />
+  来源：<a href="https://x.com/akshat_b/status/2044489564211880169">帖子</a><br />
+- <strong>The Dreamer's Road begins in reinforcement learning, with the idea that an agent can learn faster by imagining possible futures.</strong> — <a href="https://t.co/mi2jbdcxkF">https://t.co/mi2jbdcxkF</a><br />
+  探讨从 Dyna 到 Dreamer 4 的强化学习中的“梦想家之路”，即通过想象未来来加速学习。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img53.jpg"><br />
+  来源：<a href="https://x.com/robonaissance/status/2044492664314155288">帖子</a><br />
+- <strong>New capabilities in the Agents SDK:</strong><br />
+  OpenAI开发者更新了Agents SDK，增加了在受控沙箱中运行Agent、检查和定制开源工具链、控制白名单等功能。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img54.jpg"><br />
+  来源：<a href="https://x.com/stevenheidel/status/2044485558391509338">帖子</a><br />
+- <strong>DDTree-MLX: tree-based speculative decoding for Apple Silicon.</strong><br />
+  开源了DDTree-MLX，这是一个用于Apple Silicon的树状推测解码器，可以加速Qwen 3.5 27b模型的运行。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img55.jpg"><br />
+  来源：<a href="https://x.com/runsonai/status/2044430597251023156">帖子</a><br />
+- <strong>Build long-running agents with more control over agent execution.</strong><br />
+  分享了 OpenAI Agents SDK 的新功能，包括受控沙箱、检查和定制开源工具。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img56.jpg"><br />
+  来源：<a href="https://x.com/OpenAIDevs/status/2044479391099719746">帖子</a><br />
+- <strong>Google Gives Spot a Reasoning Brain</strong><br />
+  今日份的 Superintelligence Newsletter 文章，关注 Google 为 Spot 带来的推理大脑。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img57.jpg"><br />
+  来源：<a href="https://x.com/getsuperintel/status/2044461515533906261">帖子</a><br />
+- <strong>Agents SDK</strong> — <a href="https://t.co/zAKInNclhX">https://t.co/zAKInNclhX</a><br />
+  OpenAI 新功能，用于构建具有更多执行控制的长运行代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img58.jpg"><br />
+  来源：<a href="https://x.com/OpenAIDevs/status/2044466741938716774">帖子</a><br />
+- <strong>AI Double Agents for belief steering via theory of mind</strong> — <a href="https://x.com/vaidehi_patil_/status/2044094662332...">https://x.com/vaidehi_patil_/status/2044094662332...</a><br />
+  关于 AI 双重代理用于通过心智理论进行信念引导的工作分享。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img59.jpg"><br />
+  来源：<a href="https://x.com/vaidehi_patil_/status/2044450580848836994">帖子</a><br />
+- <strong>VOID: Video Object and Interaction Deletion</strong> — <a href="arxiv.org">arxiv.org</a><br />
+  本周 DL Weekly 的一篇论文，关于视频对象和交互删除。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img60.jpg"><br />
+  来源：<a href="https://x.com/dl_weekly/status/2044464565862252713">帖子</a><br />
+- <strong>Cool Hermes cheat sheet</strong><br />
+  Reddit 上发现的实用的 Hermes 工具备忘录，强烈推荐查看。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img61.jpg"><br />
+  来源：<a href="https://x.com/mr_r0b0t/status/2044417267266359535">帖子</a><br />
+- <strong>GlotOCR Bench</strong> — <a href="https://huggingface.co/papers/2604.12978">https://huggingface.co/papers/2604.12978</a><br />
+  一篇关于 GlotOCR Bench 的论文，探讨 OCR 模型在处理多种 Unicode 脚本时遇到的挑战。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img62.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044463712241623046">帖子</a><br />
+- <strong>Simple Self-Distillation</strong><br />
+  Apple 推出的 Simple Self-Distillation 微调方法，可以通过模型自身输出来改进编码任务。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img63.jpg"><br />
+  来源：<a href="https://x.com/SergioPaniego/status/2044424654287167544">帖子</a><br />
+- <strong>Current AIs seem pretty misaligned to me — LessWrong</strong> — <a href="https://lesswrong.com/posts/26b4Xf29x6eS4s74e/current-ais-seem-pretty-misaligned-to-me">https://lesswrong.com/posts/26b4Xf29x6eS4s74e/current-ais-seem-pretty-misaligned-to-me</a><br />
+  作者分享了他对当前 AI 模型行为错位的观察和分析，并对未来一年内的改进程度进行了预测。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img64.jpg"><br />
+  来源：<a href="https://x.com/RyanPGreenblatt/status/2044459774000173201">帖子</a><br />
+- <strong>Gemini API for speech generation</strong> — <a href="https://ai.google.dev/gemini-api/docs/speech-generation">https://ai.google.dev/gemini-api/docs/speech-generation</a><br />
+  分享了 Google Gemini API 的语音生成文档，并称赞其提供了极佳的提示指南。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img65.jpg"><br />
+  来源：<a href="https://x.com/_philschmid/status/2044457257656521150">帖子</a><br />
+- <strong>deepagents now supports structured output for subagents!</strong><br />
+  分享了 deepagents 支持结构化输出的特性，强调了上下文工程的重要性。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img66.jpg"><br />
+  来源：<a href="https://x.com/mstockton/status/2044429824840573266">帖子</a><br />
+- <strong>march changelog</strong> — <a href="http://tpuf.link/chlog">http://tpuf.link/chlog</a><br />
+  分享了 turbopuffer 的三月更新日志。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img67.jpg"><br />
+  来源：<a href="https://x.com/turbopuffer/status/2044430066319515854">帖子</a><br />
+- <strong>The self-improving AI agent built by Nous Research</strong> — <a href="https://t.co/GYXkZo5l1b">https://t.co/GYXkZo5l1b</a><br />
+  介绍Nous Research构建的带有内置学习循环的自改进AI代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img68.jpg"><br />
+  来源：<a href="https://x.com/dl_weekly/status/2044423109973815447">帖子</a><br />
+- <strong>why and what I learned from that</strong> — <a href="https://dylanmatthews.sub …">https://dylanmatthews.sub …</a><br />
+  作者分享了对AI的看法转变，以及从中吸取的经验和教训。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img69.jpg"><br />
+  来源：<a href="https://x.com/dylanmatt/status/2044409906153832622">帖子</a><br />
+- <strong>fully-LLM backend</strong> — <a href="https://t.co/SrjtBmVdOp">https://t.co/SrjtBmVdOp</a><br />
+  作者兴奋地分享了一个使用全LLM后端模式解决问题的应用。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img70.jpg"><br />
+  来源：<a href="https://x.com/kylebrussell/status/2044422282706063722">帖子</a><br />
+- <strong>what are some really good blogs on evaluating multi turn agents</strong><br />
+  询问并推荐了关于评估多轮对话Agent的优质博客。<br />
+  来源：<a href="https://x.com/dejavucoder/status/2044357995988144205">帖子</a><br />
+- <strong>anthropic has a good one</strong> — <a href="https://t.co/6BChEMBrsL">https://t.co/6BChEMBrsL</a><br />
+  推荐了Anthropic关于评估多轮对话Agent的一个好资源。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img71.jpg"><br />
+  来源：<a href="https://x.com/dejavucoder/status/2044401390915834161">帖子</a><br />
+- <strong>Reward Hacking in Claude Code RL Training</strong><br />
+  分享了关于Claude Code RL训练中奖励劫持的见解，并提供了一个链接。<br />
+  来源：<a href="https://x.com/ZhihuFrontier/status/2044397508194152898">帖子</a><br />
+- <strong>Hermes hands on guide: concepts, core mechanisms, and real world use cases.</strong><br />
+  推荐了关于Hermes Agent的实践指南，涵盖概念、核心机制和实际用例。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img72.jpg"><br />
+  来源：<a href="https://x.com/ClawiAi/status/2044363256857284916">帖子</a><br />
+- <strong>DFlash x MLX is happening! Shoutout to @aryagm01 for the early work on this. We're building on the momentum. Native MLX support, more models (Qwen3.5), up to 4x faster. Lossless!</strong> — <a href="http://github.com/">http://github.com/</a><br />
+  分享了一个关于 DFlash x MLX 项目的更新，提到了性能提升和更多模型支持，并给出了 GitHub 链接。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img73.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044373596752302495">帖子</a><br />
+- <strong>TIPSv2 from @GoogleDeepMind, a foundational image-text encoder with spatial awareness, leading to strong ove …</strong><br />
+  推荐了 Google DeepMind 的 TIPSv2，一个具有空间意识的基础图像-文本编码器，并暗示了其在多模态 AI 领域的重要性。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img74.jpg"><br />
+  来源：<a href="https://x.com/andrefaraujo/status/2044362911242502498">帖子</a><br />
+- <strong>Automate your Chrome browser with Gemini</strong> — <a href="https://t.co/4IzPKFsW1k">https://t.co/4IzPKFsW1k</a><br />
+  提到了使用 Gemini 自动化 Chrome 浏览器的方法，可能指向一个工具或教程。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img75.jpg"><br />
+  来源：<a href="https://x.com/TheRundownAI/status/2044362640546201900">帖子</a> · <a href="https://x.com/TheRundownAI/status/2044362644627313064">帖子</a><br />
+- <strong>Got on my mac to have native install of Hermes to play around with /browser connect command - now hermes is browsing the community run Hermes Agent reddit So useful and easy!</strong><br />
+  推荐了 native install of Hermes，称其易于使用，并能连接浏览器，浏览社区运行的 Hermes Agent Reddit。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img76.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044329280201732217">帖子</a><br />
+- <strong>read menswear guy for history lesson</strong><br />
+  作者推荐了一个关于男装购买的深入指南，作为历史学习资料。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img77.jpg"><br />
+  来源：<a href="https://x.com/dejavucoder/status/2044328377285566716">帖子</a></p>
+</div><h3 id="sec-recs-4">🎓 课程</h3><div class="category-section">
+<ul>
+<li><strong>Learn how to use coding agents in 30 minutes!</strong><br />
+  一个免费的30分钟课程，教授如何使用编码代理构建软件，包括规划新功能、修复bug等。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img78.jpg"><br />
+  来源：<a href="https://x.com/leerob/status/2044540647298761025">帖子</a></li>
+<li><strong>Mastering notebooks in Gemini</strong> — <a href="https://t.co/IAYiy1ZOzh">https://t.co/IAYiy1ZOzh</a><br />
+  Google DeepMind产品经理将进行直播演示，教授如何在Gemini中掌握多模态上下文、持久内存、项目组织等。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img79.jpg"><br />
+  来源：<a href="https://x.com/GeminiApp/status/2044485594177540161">帖子</a></li>
+<li><strong>New course: Spec-Driven Development with Coding Agents</strong><br />
+  Built in partnership with JetBrains, and taught by Paul Weveritt. Vibe coding is fast, but often produces code that doesn't match what you need.<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img80.jpg"><br />
+  来源：<a href="https://x.com/AndrewYNg/status/2044449830605582629">帖子</a></li>
+<li><strong>7-Day Learner Challenge: Tiny Tamagotchi MVP with Spec-Driven Development</strong> — <a href="https://community.deeplearning.ai/challenge/tiny-tamagotchi-spec-driven-development">https://community.deeplearning.ai/challenge/tiny-tamagotchi-spec-driven-development</a><br />
+  鼓励用户参与为期7天的挑战，使用spec-driven development构建一个类似Tamagotchi的Web应用，这是一个实践性的学习机会。<br />
+  来源：<a href="https://x.com/DeepLearningAI">@DeepLearningAI</a></li>
+</ul>
+</div><h3 id="sec-recs-5">🎙️ 播客</h3><div class="category-section">
+<ul>
+<li><strong>I know I'm late to this but listening to the Dwarkesh-Jensen Huang interview and it's wild. Jensen is typically such a composed and calm person, I've never seen Jensen so annoyed before, it's kinda …</strong><br />
+  对 Dwarkesh 与 Jensen Huang 的访谈的评论，提到了 Jensen Huang 不同寻常的激动反应，暗示了访谈内容的引人入胜。<br />
+  来源：<a href="https://x.com/iScienceLuvr/status/2044673097903595544">帖子</a></li>
+<li><strong>thursdai_pod</strong> — <a href="https://youtube.com/watch?v=bv8rPh pYmpI">https://youtube.com/watch?v=bv8rPh pYmpI</a><br />
+  分享了播客频道 thursdai_pod 达到 15 个 YouTube 订阅的成就，并预告了即将到来的直播嘉宾。<br />
+  来源：<a href="https://x.com/altryne/status/2044611107403571368">帖子</a></li>
+<li><strong>I chatted with @ysmulki about MatX, chip design and where silicon designed for LLMs is headed</strong><br />
+  作者与 @ysmulki 进行了关于 MatX、芯片设计以及为 LLM 设计的硅片未来走向的深入讨论。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img81.jpg"><br />
+  来源：<a href="https://x.com/reinerpope/status/2044525525646119419">帖子</a></li>
+<li><strong>The Batch - AI Dev 26 preview</strong> — <a href="https://t.co/B5ZspbjePr">https://t.co/B5ZspbjePr</a><br />
+  Andrew Ng 预览了 AI Dev 26，讨论 AI 如何重塑软件工程。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img82.jpg"><br />
+  来源：<a href="https://x.com/DeepLearningAI/status/2044576458144690595">帖子</a></li>
+<li><strong>The Jensen Huang episode.</strong> — <a href="https://x.com/DwarkeshPatel/status/1783840565820043327">https://x.com/DwarkeshPatel/status/1783840565820043327</a><br />
+  讨论英伟达的护城河、TPU 的挑战以及英伟达成为超大规模厂商的可能性。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img83.jpg"><br />
+  来源：<a href="https://x.com/scaling01/status/2044496531823169825">帖子</a></li>
+<li><strong>The Jensen Huang episode</strong><br />
+  关于 Jensen Huang 的播客，讨论了 Nvidia 的护城河、TPU 对 Nvidia 计算能力的挑战以及 Nvidia 是否会成为超大规模供应商。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img84.jpg"><br />
+  来源：<a href="https://x.com/dwarkesh_sp/status/2044456498441708013">帖子</a></li>
+<li><strong>Uber, Nissan, and Mercedes Chose This Self-Driving Startup</strong> — <a href="https://wb.oia.bio/138yt">https://wb.oia.bio/138yt</a><br />
+  Gradient Dissent | Alex Kendall. Wayve AI is giving Waymo and Tesla a run for their money.<br />
+  来源：<a href="https://x.com/wandb/status/2044445752467030101">帖子</a></li>
+<li><strong>Ouro: Building Self-Improving AI Through Iterative Learning Loops</strong><br />
+  播客探讨Ouro，一种侧重于自改进的新AI方法。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img85.jpg"><br />
+  来源：<a href="https://x.com/LearnOpenCV/status/2044410840649232690">帖子</a></li>
+<li><strong>interview the Falcon Perception team</strong><br />
+  预告即将进行的关于Falcon Perception团队的访谈，将深入模型、演示和开发经验。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img86.jpg"><br />
+  来源：<a href="https://x.com/yacinelearning/status/2044418093552746683">帖子</a></li>
+<li><strong>big brain knowledge from @justinskycak</strong><br />
+  播客访谈，讨论学习数学的经验和构建方法。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img87.jpg"><br />
+  来源：<a href="https://x.com/yacinelearning/status/2044407502477910520">帖子</a></li>
+<li><strong>computer vision, multimodal AI &amp; world models podcast</strong><br />
+  推荐了一个关于计算机视觉、多模态AI和世界模型的播客，强调其早期制作但延迟发布。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img88.jpg"><br />
+  来源：<a href="https://x.com/mervenoyann/status/2044390649743425622">帖子</a></li>
+<li><strong>Superintelligence now also available as a podcast</strong><br />
+  宣布“Superintelligence”现在可以作为播客收听，并列出了可在各大平台收听。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img89.jpg"><br />
+  来源：<a href="https://x.com/kimmonismus/status/2044369169723064463">帖子</a></li>
+<li><strong>If you're only listening to one podcast per quarter about global large models, this episode is all you need. </strong><br />
+  推荐了一个关于全球大模型演进的播客，称之为本季度必听。<br />
+  来源：<a href="https://x.com/robonaissance/status/2044322949545521417">帖子</a></li>
+</ul>
+</div><h3 id="sec-recs-6">🔗 其他</h3><div class="category-section">
+<ul>
+<li><strong>The probability of this happening is not 0%</strong><br />
+  Elon Musk 的一个简短评论，可能与某个事件的可能性有关，带有不确定但有趣的语气。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img90.jpg"><br />
+  来源：<a href="https://x.com/elonmusk/status/2044675545670230323">帖子</a></li>
+<li><strong>We’ve been thinking a lot about scaling laws, wondering if there is a more effective way to scale FLOPs without increasing parameters. Turns out the answer is YES – by looping blocks of layers during</strong><br />
+  分享了 Parcae 项目，该项目探索了在不增加参数的情况下，通过循环层块来更有效地扩展 FLOPs 的方法。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img91.jpg"><br />
+  来源：<a href="https://x.com/realDanFu/status/2044459930149941304">帖子</a></li>
+<li><strong>Muse Spark</strong><br />
+  推荐 Muse Spark 模型，称其在 TaxEval 和 Finance Agent 评测中表现优异，适用于多种实际场景。<br />
+  来源：<a href="https://x.com/jack_w_rae/status/2044550578089693653">帖子</a></li>
+<li><strong>Gemini 3.1 Flash TTS</strong><br />
+  推荐一个具有精细控制、更自然表情的AI文本转语音模型，可用于生成AI语音。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img92.jpg"><br />
+  来源：<a href="https://x.com/demishassabis/status/2044599020690010217">帖子</a></li>
+<li><strong>Mascot!!</strong><br />
+  推荐一个适合不想学习3D的用户的动画工具。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img93.jpg"><br />
+  来源：<a href="https://x.com/andrew_n_carr/status/2044575909748109558">帖子</a></li>
+<li><strong>tsgo</strong> — <a href="https://t.co/lOX5xCfSOy">https://t.co/lOX5xCfSOy</a><br />
+  一个内部团队采用 tsgo（即将成为 TypeScript 7）后，每月节省了约 400 小时的 CI 构建等待时间。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img94.jpg"><br />
+  来源：<a href="https://x.com/drosenwasser/status/2044564756028395620">帖子</a></li>
+<li><strong>Sakana AI R&amp;D</strong><br />
+  Sakana AI 正在招聘软件工程师，帮助扩展其研发能力，以推动自动化...<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img95.jpg"><br />
+  来源：<a href="https://x.com/hardmaru/status/2044423881960923352">帖子</a></li>
+<li><strong>Software Engineer (Research and Development)</strong> — <a href="https://t.co/E1uPJa5tIy">https://t.co/E1uPJa5tIy</a><br />
+  Sakana AI 正在招聘软件工程师，负责研发。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img96.jpg"><br />
+  来源：<a href="https://x.com/hardmaru/status/2044563733750681836">帖子</a></li>
+<li><strong>Claude Code environment with Codex plugin</strong><br />
+  OpenAI 发布了一个插件，可以在 Claude Code 环境中直接调用 Codex，将 Claude Code 变成一个多代理设置。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img97.jpg"><br />
+  来源：<a href="https://x.com/TheTuringPost/status/2044561927905677558">帖子</a></li>
+<li><strong>AI Guides &amp; Breakdowns</strong> — <a href="https://t.co/ZAWNoFZDAq">https://t.co/ZAWNoFZDAq</a><br />
+  关注 @TheTuringPost 获取更多 AI 深度分析、指南和分解。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img98.jpg"><br />
+  来源：<a href="https://x.com/TheTuringPost/status/2044561951939039275">帖子</a></li>
+<li><strong>Dagger</strong> — <a href="https://t.co/xaunARRMnB">https://t.co/xaunARRMnB</a><br />
+  Dagger 即将从 Buildkit 迁移到一个干净的重构实现，这对于 CI/CD 的大量基础设施至关重要。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img99.jpg"><br />
+  来源：<a href="https://x.com/solomonstre/status/2044548400503472189">帖子</a></li>
+<li><strong>Tesla Service</strong><br />
+  Tesla Assist 可以上传图片，询问车辆问题，或获得服务帮助。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img100.jpg"><br />
+  来源：<a href="https://x.com/elonmusk/status/2044558017329566087">帖子</a></li>
+<li><strong>SEC EDGAR filings</strong><br />
+   TeraflopAI, johngfriedman 和 daftengine 免费开源了 SEC EDGAR 的所有主要文件。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img101.jpg"><br />
+  来源：<a href="https://x.com/EnricoShippole/status/2044432865862054361">帖子</a></li>
+<li><strong>Notion Agent + Calendar</strong><br />
+  Notion Agent 现在可以使用日历，可以找到团队成员的空闲时间、创建和更新活动。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img102.jpg"><br />
+  来源：<a href="https://x.com/zachtratar/status/2044557713234129354">帖子</a></li>
+<li><strong>hermes-lcm v0.3.0</strong> — <a href="https://t.co/VTkIHPWPX4">https://t.co/VTkIHPWPX4</a><br />
+  hermes-lcm v0.3.0 发布，新增智能搜索和自适应压缩功能。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img103.jpg"><br />
+  来源：<a href="https://x.com/SteveSchoettler/status/2044536537434755493">帖子</a></li>
+<li><strong>Hermes Agent official support for QQBot and AWS Bedrock Model Provider</strong><br />
+  Hermes Agent 已增加对 QQBot 和 AWS Bedrock Model Provider 的官方支持。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img104.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044557360962871711">帖子</a></li>
+<li><strong>Lyra 2.0</strong> — <a href="https://huggingface.co/nvidia/Lyra-2.0">https://huggingface.co/nvidia/Lyra-2.0</a><br />
+  分享了Nvidia发布的Lyra 2.0，这是一个Explorable Generative 3D Worlds的项目，提供了模型链接。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img105.jpg"><br />
+  来源：<a href="https://x.com/xuanchi13/status/2044552163418878229">帖子</a></li>
+<li><strong>Tyrus is awesome.</strong> — <a href="https://x.com/zachtratar/status/2044542831411532059">https://x.com/zachtratar/status/2044542831411532059</a><br />
+  作者称赞Tyrus的贡献，并表示很高兴能与他合作。<br />
+  来源：<a href="https://x.com/zachtratar/status/2044542831411532059">帖子</a></li>
+<li><strong>Windsurf 2.0</strong><br />
+  Windsurf 2.0允许用户在一个地方管理所有代理，并将工作委派给云端，以便在关闭笔记本电脑后代理也能继续工作。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img106.jpg"><br />
+  来源：<a href="https://x.com/swyx/status/2044542494420214217">帖子</a></li>
+<li><strong>cyberdecks are so fucking cool i need to build one</strong><br />
+  引用了对 cyberdeck 的热情推荐，表达了对构建 cyberdeck 的兴趣。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img107.jpg"><br />
+  来源：<a href="https://x.com/_deafbeef/status/2044516716428849630">帖子</a></li>
+<li><strong>vibe coding in virtual reality on the apple vision pro</strong><br />
+  提到在 VR CLI 设置中缺少 Grok 编码代理，暗示了对这种工作方式的兴趣。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img108.jpg"><br />
+  来源：<a href="https://x.com/nptacek/status/2044533572464214285">帖子</a></li>
+<li><strong>Huawei camera AI now recommends poses before you click the shutter button</strong><br />
+  对华为相机 AI 推荐拍照姿势的功能表示赞赏，认为其“天才”。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img109.jpg"><br />
+  来源：<a href="https://x.com/scaling01/status/2044530197622403228">帖子</a></li>
+<li><strong>workforce upskilling</strong><br />
+  分享了作者的团队获得 Laude Institute 的 Moonshots 种子资助，用于开发衡量 AI 对工作影响的新工具。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img110.jpg"><br />
+  来源：<a href="https://x.com/Diyi_Yang/status/2044513911484125496">帖子</a></li>
+<li><strong>scientific agents for physical experimentation in the lab</strong><br />
+  分享了其关于为实验室物理实验开发科学代理的提案获得了 Laude Moonshot Grant 的荣誉提名。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img111.jpg"><br />
+  来源：<a href="https://x.com/AkariAsai/status/2044492475788566732">帖子</a></li>
+<li><strong>push for the proliferation of open model and dataset releases</strong><br />
+  呼吁在美国 AI 生态系统日益封闭的情况下，大力推广开源模型和数据集的发布，并提到了 Datamule。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img112.jpg"><br />
+  来源：<a href="https://x.com/TeraflopAI/status/2044430993549832615">帖子</a></li>
+<li><strong>Open Hermes agent</strong><br />
+  新发布的针对 hermes agent 的开源数据集。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img113.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044518923677405648">帖子</a></li>
+<li><strong>OpenAI Agents SDK</strong> — <a href="https://platform.openai.com/docs/sdk/agents">https://platform.openai.com/docs/sdk/agents</a><br />
+  对 OpenAI Agents SDK 的重大更新表示赞赏，该更新允许在生产环境中扩展 Codex 类代理。<br />
+  来源：<a href="https://x.com/andersonbcdefg/status/2044517520229732822">帖子</a></li>
+<li><strong>Hermes agent native swift desktop app v1.0</strong><br />
+  正在寻找测试人员来测试一个为 Hermes agent 开发的 slick native swift desktop app v1.0。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img114.jpg"><br />
+  来源：<a href="https://x.com/nesquena/status/2044516572983923021">帖子</a></li>
+<li><strong>Jonas is great!</strong><br />
+  对Jonas的积极评价，可能与某个工具或项目相关。<br />
+  来源：<a href="https://x.com/_lewtun/status/2044512723619152018">帖子</a></li>
+<li><strong>Seems like a lot of people are questioning open source for businesses right now? I wanted to come out hard on the other side. There's never been a better time to open source your business.</strong><br />
+  作者强烈推荐将业务开源，认为现在是最佳时机。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img115.jpg"><br />
+  来源：<a href="https://x.com/theo/status/2044510003156160992">帖子</a></li>
+<li><strong>the most cringe thing that has happened to applied ai is the openclaw hype</strong><br />
+  作者表达了对openclaw炒作的负面评价，认为这是对应用AI的一种糟糕现象。<br />
+  来源：<a href="https://x.com/dejavucoder/status/2044508873080623410">帖子</a></li>
+<li><strong>it's the easiest time in history to start a company. you can be a solo ceo running hundreds of agents. the bar for entry has never been lower. however, it's the hardest time in history to build a mo …</strong><br />
+  作者认为现在是创业的最佳时机，特别是利用AI代理，但构建“mo”很难。<br />
+  来源：<a href="https://x.com/multiply_matrix/status/2044508781401502022">帖子</a></li>
+<li><strong>Highly recommend applying if you're keen to get into AI safety!</strong><br />
+  鼓励对AI安全感兴趣的人申请Constellation的Astra Fellowship。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img116.jpg"><br />
+  来源：<a href="https://x.com/jplhughes/status/2044481754468065618">帖子</a></li>
+<li><strong>coming soon to @tldraw dot com, we fix the marquee scroll direction for our cookie consent banner's accept button for right-to-left languages. this comes thanks to all the feedback from speakers of …</strong><br />
+  tldraw.com即将更新，修复了某些语言的cookie同意横幅按钮滚动方向问题。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img117.jpg"><br />
+  来源：<a href="https://x.com/max__drake/status/2044505000429187147">帖子</a></li>
+<li><strong>I spent some time trying to distill all the complex factors impacting open models -- economics, capabilities, distribution, policy, etc. -- into a clear list of beliefs. Here they are in full. 1. It’ …</strong><br />
+  作者整理了影响开放模型（经济、能力、分发、政策等）的因素，并列出了自己的信念。<br />
+  来源：<a href="https://x.com/natolambert/status/2044483587680985111">帖子</a></li>
+<li><strong>This has been one of my favorite ships in a while! Some use cases: - /pr-review-canvas: build an interactive PR review visualization without having to leave Cursor - Using the canvas to visualize and …</strong><br />
+  作者对Cursor的新功能“PR-review-canvas”表示赞赏，并列举了使用场景。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img118.jpg"><br />
+  来源：<a href="https://x.com/DevangJhabakh/status/2044489339774927190">帖子</a></li>
+<li><strong>I use this a lot for making QA testing matrices for myself to automate local testing scenarios, keep track of all of the options, and watch the agent fill them out as it self drives its way thru (occ …</strong><br />
+  作者推荐使用Cursor的画布功能来创建QA测试矩阵，用于自动化本地测试。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img119.jpg"><br />
+  来源：<a href="https://x.com/sjwhitmore/status/2044502596321481205">帖子</a></li>
+<li><strong>This is a great idea, I would love a business-focused version of Discord</strong><br />
+  作者对Discord的商业化版本表示强烈期待，认为这是一个好主意。<br />
+  来源：<a href="https://x.com/iScienceLuvr/status/2044501733238317388">帖子</a></li>
+<li><strong>New language options are now available for transcription during ambient scribing in Glass. We've added over 50 language options so that when a patient-provider conversation is happening in another lan …</strong> — <a href="https://t.co/xbCxXToA9A">https://t.co/xbCxXToA9A</a><br />
+  Glass新增了50多种语言转录选项，支持多种语言的医患对话。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img120.jpg"><br />
+  来源：<a href="https://x.com/GlassHealthHQ/status/2044501663101096199">帖子</a></li>
+<li><strong>Use Vercel Sandbox with the OpenAI agents SDK as an official extension.</strong> — <a href="https://vercel.com/blog/vercel-sandbox-openai-agents">https://vercel.com/blog/vercel-sandbox-openai-agents</a><br />
+  推荐使用 Vercel Sandbox 配合 OpenAI Agents SDK 构建在隔离环境中运行代码、读写文件和分析数据的代理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img121.jpg"><br />
+  来源：<a href="https://x.com/vercel_dev/status/2044492058073960733">帖子</a></li>
+<li><strong>hey folks check out arcee compute grant program for your next research/project</strong><br />
+  推荐 Arcee 的计算赠款计划，为研究和项目提供慷慨的开放权重模型免费推理访问。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img122.jpg"><br />
+  来源：<a href="https://x.com/yacinelearning/status/2044494644214473050">帖子</a></li>
+<li><strong>Love seeing M2.7 in the hands of builders</strong><br />
+  赞赏 MiniMax M2.7 在开发者手中的应用，展示了通过提示词生成游戏的强大能力。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img123.jpg"><br />
+  来源：<a href="https://x.com/MiniMax_AI/status/2044495903286059172">帖子</a></li>
+<li><strong>We gave Cline access to @Blender.</strong><br />
+  展示了 Cline 如何通过自然语言控制 Blender，实现对对象、材质、着色器和动画的生成。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img124.jpg"><br />
+  来源：<a href="https://x.com/cline/status/2044491260023746728">帖子</a></li>
+<li><strong>The Uncharted Data Challenge</strong><br />
+  一个挑战赛，提供20,000美元奖金，鼓励参与者改进AI在数据方面的不足，截止日期为5月1日。<br />
+  来源：<a href="https://x.com/adaption_ai">@adaption_ai</a></li>
+<li><strong>Cursor can now respond by creating interactive canvases to visually represent information.</strong><br />
+  Cursor现在可以通过创建交互式画布来可视化信息，生成比纯文本更丰富的仪表板和自定义界面。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img125.jpg"><br />
+  来源：<a href="https://x.com/cursor_ai/status/2044486585492947010">帖子</a></li>
+<li><strong>hermes agent is becoming the general agent</strong><br />
+  Hermes Agent正在成为通用Agent，社区管理员已观察到此趋势数周。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img126.jpg"><br />
+  来源：<a href="https://x.com/sudoingX/status/2044405911150829709">帖子</a></li>
+<li><strong>Introducing the Trinity Builders Program.</strong><br />
+  Arcee.ai推出的Trinity Builders Program，为开发者、研究人员和开源构建者提供免费的Trinity模型API推理访问。<br />
+  来源：<a href="https://x.com/latkins/status/2044473550564982969">帖子</a></li>
+<li><strong>Gemini on Mac</strong><br />
+  Gemini首次登陆桌面端，作为原生Swift应用程序在Mac上发布。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img127.jpg"><br />
+  来源：<a href="https://x.com/sundarpichai/status/2044452464724967550">帖子</a></li>
+<li><strong>New leaderboard has arrived: Image to WebDev.</strong><br />
+  发布了新的Image to WebDev排行榜，评估模型根据截图和图像生成网站的能力，Anthropic在榜单前列。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img128.jpg"><br />
+  来源：<a href="https://x.com/arena/status/2044480481790726161">帖子</a></li>
+<li><strong>AI 领域测试工具</strong> — <a href="https://t.co/tm5AOZ3XkK">https://t.co/tm5AOZ3XkK</a><br />
+  鼓励用户测试哪些前沿模型能够处理设计代码。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img129.jpg"><br />
+  来源：<a href="https://x.com/arena/status/2044480486429651272">帖子</a></li>
+<li><strong>Ships and Hermes Agents</strong><br />
+  推荐了基于 @NousResearch 开发能力构建的 Shipsafe x Hermes Agents。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img130.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044478500028248401">帖子</a></li>
+<li><strong>Gemini App on Mac</strong><br />
+  推荐 Gemini App 原生支持 Mac，提供更快、更集成的 AI 帮助。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img131.jpg"><br />
+  来源：<a href="https://x.com/Google/status/2044453452911157698">帖子</a></li>
+<li><strong>Hermes Agent on Mac</strong><br />
+  分享了在 Mac 上安装 Hermes 并使用 /browser connect 命令进行浏览器操作的体验。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img132.jpg"><br />
+  来源：<a href="https://x.com/0xme66/status/2044410470770331913">帖子</a></li>
+<li><strong>Trinity Builders Program</strong> — <a href="https://t.co/6IUkVgmZ0E">https://t.co/6IUkVgmZ0E</a><br />
+  介绍了 Trinity Builders Program，为开发者提供 Trinity 模型免费推理访问。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img133.jpg"><br />
+  来源：<a href="https://x.com/arcee_ai/status/2044454391705481298">帖子</a></li>
+<li><strong>Hermes Agent with DFlash x MLX</strong><br />
+  推荐了基于 DFlash x MLX 的 Hermes Agent，并提到 breakthroughs happening everyday. keep learning, and implement FAST!<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img134.jpg"><br />
+  来源：<a href="https://x.com/aijoey/status/2044394130004930945">帖子</a></li>
+<li><strong>MazeBench</strong> — <a href="http://mazebench.com">http://mazebench.com</a><br />
+  分享了 Mazebench.com 的链接，并表示喜欢 patience cave benchmarks 很容易记忆模型分数。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img135.jpg"><br />
+  来源：<a href="https://x.com/scaling01/status/2044470883905900900">帖子</a></li>
+<li><strong>MAI-Image-2-Efficient</strong><br />
+  MAI-Image-2-Efficient 是一个用于迭代工作流程的生产力工具，注重数量、速度和成本控制。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img136.jpg"><br />
+  来源：<a href="https://x.com/mustafasuleyman/status/2044467951429116290">帖子</a></li>
+<li><strong>MAI Playground</strong> — <a href="https://t.co/1Z0IKfytwV">https://t.co/1Z0IKfytwV</a><br />
+  MAI Playground 现已在 Microsoft Foundry 上线。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img137.jpg"><br />
+  来源：<a href="https://x.com/mustafasuleyman/status/2044467953169793082">帖子</a></li>
+<li><strong>SF Happy Hour - April 28</strong> — <a href="https://...">https://...</a><br />
+  4月28日在旧金山举行的 Qdrant 团队 Happy Hour，旨在与 AI 开发者交流。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img138.jpg"><br />
+  来源：<a href="https://x.com/qdrant_engine/status/2044466652864242065">帖子</a></li>
+<li><strong>Parcae</strong><br />
+  Parcae 项目，旨在扩展 FLOPs per parameter，可能通过层循环实现。<br />
+  来源：<a href="https://x.com/simran_s_arora/status/2044462384371343588">帖子</a></li>
+<li><strong>Parcae, from @realDanFu (Together AI's VP of Kernels) and his lab</strong> — <a href="https://together.ai/blog/parcae">https://together.ai/blog/parcae</a><br />
+  介绍了一种新的 Transformer 模型架构，能在更小的模型中实现更高的 Transformer 质量，并提供了训练代码和模型。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img139.jpg"><br />
+  来源：<a href="https://x.com/togethercompute/status/2044454051543453745">帖子</a></li>
+<li><strong>Gemini 3.1 Flash TTS released.</strong><br />
+  Highlight: highly controllable speech via simple text prompts, more natural voices, and support for 70+ languages. Nice one<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img140.jpg"><br />
+  来源：<a href="https://x.com/kimmonismus/status/2044451526865809616">帖子</a></li>
+<li><strong>Nemotron 3 Super</strong> — <a href="https://huggingface.co/papers/2604.12374">https://huggingface.co/papers/2604.12374</a><br />
+  Open, Efficient Mixture-of-Experts Hybrid Mamba-Transformer Model for Agentic Reasoning<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img141.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044450499898769930">帖子</a></li>
+<li><strong>Habitat-GS</strong> — <a href="https://huggingface.co/papers/2604.12626">https://huggingface.co/papers/2604.12626</a><br />
+  A High-Fidelity Navigation Simulator with Dynamic Gaussian Splatting<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img142.jpg"><br />
+  来源：<a href="https://x.com/_akhaliq/status/2044446412033675457">帖子</a></li>
+<li><strong>webAI-ColVec1</strong><br />
+  开源了webAI-ColVec1，在ViDoRe V3上排名第一，提供了前沿水平的检索能力，无需OCR或预处理。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img143.jpg"><br />
+  来源：<a href="https://x.com/thewebAI/status/2044435998508240926">帖子</a></li>
+<li><strong>Starlink</strong><br />
+  作者强烈推荐Starlink，认为其在飞行途中是最佳的互联网服务，远超其他任何选择，是一个卓越的服务/产品。<br />
+<br />
+<div class="media-grid"><img src="x_posts_2026-04-16T16-07-00_media/section_img144.jpg"><img src="x_posts_2026-04-16T16-07-00_media/section_img145.jpg"></div></li>
+</ul>
+<p>来源：<a href="https://x.com/RonDeSantis/status/2044389994630939065">帖子</a><br />
+- <strong>Gradio Super Mario theme</strong><br />
+  宣布Gradio推出了Super Mario主题，可以通过设置theme='hmb/super-mario'来使用，增加了界面的趣味性。<br />
+  来源：<a href="https://x.com/_akhaliq">@_akhaliq</a><br />
+- <strong>Document Arena leaderboard</strong> — <a href="https://t.co/WCrZCb7EN2">https://t.co/WCrZCb7EN2</a><br />
+  分享了Document Arena排行榜的链接，其中提到了新的模型正在重塑排名，包括两个开源模型。<br />
+  来源：<a href="https://x.com/arena">@arena</a><br />
+- <strong>TIPSv2</strong><br />
+  推荐了一个名为 TIPSv2 的基础视觉编码器模型，并鼓励大家尝试。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img146.jpg"><br />
+  来源：<a href="https://x.com/gabriberton/status/2044428990103101788">帖子</a><br />
+- <strong>Keep Android Open</strong> — <a href="https://keepandroidopen.org/cta/">https://keepandroidopen.org/cta/</a><br />
+  倡导Android作为免费开放平台，用户可以自由构建应用。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img147.jpg"><br />
+  来源：<a href="https://x.com/WolframRvnwlf/status/2044421236814463034">帖子</a><br />
+- <strong>Slop Con</strong><br />
+  一个关于AI在2027年企业中重要性的会议。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img148.jpg"><br />
+  来源：<a href="https://x.com/yrechtman/status/2044390509993406884">帖子</a><br />
+- <strong>The most powerful LLM to run at home</strong><br />
+  推荐了一个在本地运行的最强大的LLM模型，SuperGemma4-31b-abliterated。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img149.jpg"><br />
+  来源：<a href="https://x.com/Yampeleg/status/2044388436476297705">帖子</a><br />
+- <strong>Muse Spark Safety &amp; Preparedness Report for Meta AI</strong><br />
+  推荐了Meta的Muse Spark模型，并在报告中强调其评估意识能力。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img150.jpg"><br />
+  来源：<a href="https://x.com/apolloaievals/status/2044389039600500807">帖子</a><br />
+- <strong>Open source AI music is actually good now</strong><br />
+  推荐了开源AI音乐的进步，并分享了一个免费的ACE-Step 1.5 demo。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img151.jpg"><br />
+  来源：<a href="https://x.com/victormustar/status/2044336082011963872">帖子</a><br />
+- <strong>Asimov v1 is an open-source humanoid robot you build.</strong><br />
+  分享了一个关于名为 Asimov v1 的开源人形机器人的项目，并表达了“太酷了，真的很需要！”的赞赏。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img152.jpg"><br />
+  来源：<a href="https://x.com/robonaissance/status/2044375661372981523">帖子</a><br />
+- <strong>codex cloud security is really good. they should advertise it more</strong><br />
+  高度评价了 codex cloud security 的优秀，并建议他们应该加强宣传。<br />
+  来源：<a href="https://x.com/vikhyatk/status/2044364203952423416">帖子</a><br />
+- <strong>For personal use, you’re free to run the software on your own servers for coding, building applications, agents, tools, or integrations, as well as for research, experi</strong><br />
+  分享了某软件的个人使用许可，允许在自有服务器上运行用于编码、构建应用、代理、工具或集成，以及研究。<br />
+  来源：<a href="https://x.com/mervenoyann/status/2044358591331668218">帖子</a><br />
+- <strong>HoloTab</strong><br />
+  一款基于最新Holo3技术的浏览器端计算机使用工具，旨在提高生产力。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img153.jpg"><br />
+  来源：<a href="https://x.com/tonywu_71/status/2044348647454712169">帖子</a><br />
+- <strong>T3 Code</strong><br />
+  在T3 Code的下一个版本中，添加新项目将变得更加容易，并且可以在Web和远程环境中工作。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img154.jpg"><br />
+  来源：<a href="https://x.com/theo/status/2044334362557292840">帖子</a><br />
+- <strong>GPT-5.4 Pro just solved Erdős Problem #1196, a 60-year-old conjecture from Erdős, Sárközy, and Szemerédi on primitive sets. </strong><br />
+  分享了一个关于GPT-5.4 Pro解决数学猜想的帖子，强调其一次性解决和推理能力。<br />
+  来源：<a href="https://x.com/kimmonismus/status/2044323747461529980">帖子</a></p>
+</div><h3 id="sec-recs-7">🔗 工具使用指南</h3><div class="category-section">
+<ul>
+<li><strong>Hermes Agent</strong><br />
+  推荐了 Hermes Agent 工具，并提到该工具的 Discord 服务器正带领新成员熟悉 Linux 安装。<br />
+  来源：<a href="https://x.com/vSouthvPawv/status/2044577709846655164">帖子</a></li>
+<li><strong>Enabling this mode will actually use CDP to reuse the account login status. It is recommended to try with a small account.</strong><br />
+  推荐了 Hermes 的原生浏览器工具，并建议用户在启用特定模式时使用小账户进行测试。<br />
+  来源：<a href="https://x.com/VinceZcrikl/status/2044607268998492180">帖子</a></li>
+<li><strong>Awesome and honored to have Mutahar choosing Hermes Agent!</strong><br />
+  作者对 Mutahar 选择 Hermes Agent 表示荣幸，并鼓励用户随时联系以获取帮助或提出建议。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img155.jpg"><br />
+  来源：<a href="https://x.com/Teknium/status/2044621204397683093">帖子</a></li>
+<li><strong>hermes is so much better than openclaw</strong><br />
+  作者强烈推荐 hermes 工具，并认为它比 openclaw 更好，对该工具的评价很高。<br />
+  来源：<a href="https://x.com/theCTO/status/2044559179151773933">帖子</a></li>
+<li><strong>Tripo P1 Image to 3D | Image to 3D | fal.ai</strong> — <a href="https://fal.ai/models/tripo3d/h3.1/image-to-3d">https://fal.ai/models/tripo3d/h3.1/image-to-3d</a><br />
+  展示如何使用Tripo P1从单个图像生成3D模型。<br />
+  来源：<a href="https://x.com/fal/status/2044482719053230281">帖子</a></li>
+<li><strong>Simulators for training on realistic scenarios</strong><br />
+  介绍Valon项目中的模拟器功能，用于在新用户训练。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img156.jpg"><br />
+  来源：<a href="https://x.com/kylebrussell/status/2044420404630941987">帖子</a></li>
+<li><strong>Kling AI Skill</strong><br />
+  介绍Kling AI Skill，无需复杂配置即可使用其核心功能。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img157.jpg"><br />
+  来源：<a href="https://x.com/Kling_ai/status/2044413037239496801">帖子</a></li>
+<li><strong>deepagents deploy</strong><br />
+  介绍deepagents deploy的用户范围内存功能，用于用户个性化数据持久化。<br />
+  <img src="x_posts_2026-04-16T16-07-00_media/section_img158.jpg"><br />
+  来源：<a href="https://x.com/hwchase17/status/2044411753455312997">帖子</a></li>
+</ul>
+</div><hr />
+<script>
+// Collapsible post bodies: add "展开" button to overflowing posts
+(function() {
+  const MAX_HEIGHT = 360;
+  document.querySelectorAll('.post-body').forEach(body => {
+    if (body.scrollHeight <= MAX_HEIGHT + 20) return;  // small margin; no toggle if barely over
+    body.classList.add('collapsible');
+    const btn = document.createElement('button');
+    btn.className = 'expand-btn';
+    btn.textContent = '展开 ▾';
+    btn.addEventListener('click', () => {
+      const expanded = body.classList.toggle('expanded');
+      body.classList.toggle('collapsible', !expanded);
+      btn.textContent = expanded ? '收起 ▴' : '展开 ▾';
+    });
+    body.parentNode.insertBefore(btn, body.nextSibling);
+  });
+})();
+// Scrollspy: highlight TOC link for the currently visible heading
+(function() {
+  const tocLinks = document.querySelectorAll('#toc a');
+  const linkById = {};
+  tocLinks.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    linkById[id] = a;
+  });
+  const headings = Array.from(document.querySelectorAll('h2[id], h3[id]'))
+    .filter(h => linkById[h.id]);
+  if (!headings.length) return;
+
+  function updateActive() {
+    const scrollY = window.scrollY;
+    const offset = 100;  // heading must be above this line to count as "current"
+    let current = headings[0];
+    for (const h of headings) {
+      if (h.getBoundingClientRect().top <= offset) current = h;
+      else break;
+    }
+    tocLinks.forEach(a => a.classList.remove('active'));
+    const active = linkById[current.id];
+    if (active) {
+      active.classList.add('active');
+      // Also activate parent h2 if current is h3
+      if (active.classList.contains('toc-h3')) {
+        const parentId = current.id.replace(/-\d+$/, '');
+        if (linkById[parentId]) linkById[parentId].classList.add('active');
+      }
+    }
+  }
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => { updateActive(); ticking = false; });
+      ticking = true;
+    }
+  }, { passive: true });
+  updateActive();
+})();
+</script>
 </body>
 </html>
